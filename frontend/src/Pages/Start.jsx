@@ -1,43 +1,126 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { gsap } from "gsap";
 import { NavLink } from "react-router-dom";
+import { FaUser, FaUserPlus } from "react-icons/fa";
+import bgHere from "../vedios/ved3.mp4";
+import logo from "../images/meditation.png";
 
 const Start = () => {
-  return (
-    <div className="relative h-screen bg-white">
-      <div className="absolute top-0 left-0 w-full p-4 flex justify-between items-center z-10">
-        <div className="text-black text-4xl font-extrabold italic">
-          Athletiqo
-        </div>
-        <div>
-          <NavLink to="/register">
-            <button
-              className="px-6 py-2 bg-blue-500 text-white rounded-full
-             hover:bg-blue-600 transition duration-300 cursor-pointer"
-            >
-              Create Account
-            </button>
-          </NavLink>
-        </div>
-      </div>
+  const [circles, setCircles] = useState([]);
 
-      <div className="flex h-full">
-        <div className="flex-1 p-8 flex flex-col justify-center space-y-6 text-black">
-          <h1 className="text-6xl font-extrabold leading-tight"> Athletiqo</h1>
-          <p className="text-xl text-gray-700 mt-2 leading-relaxed">
-            Experience personal health care and yoga in one place. Our app is
-            here to support your health journey.
-          </p>
-          <NavLink to="/login">
-            <button
-              className="  w-40 h-10 bg-blue-500 text-white rounded-full mt-6
-             hover:bg-blue-600 transition 
-             duration-300 cursor-pointer"
-            >
-              Already a user
-            </button>
-          </NavLink>
+  useEffect(() => {
+    const generateRandomCircles = () => {
+      const circleArray = [];
+      const numberOfCircles = 10;
+
+      for (let i = 0; i < numberOfCircles; i++) {
+        const size = Math.random() * (100 - 30) + 30;
+        const xPos = Math.random() * window.innerWidth;
+        const yPos = Math.random() * window.innerHeight;
+        const animationDelay = Math.random() * 2;
+        const circle = {
+          size,
+          xPos,
+          yPos,
+          animationDelay,
+        };
+        circleArray.push(circle);
+      }
+      setCircles(circleArray);
+    };
+
+    generateRandomCircles();
+  }, []);
+
+  useEffect(() => {
+    if (circles.length > 0) {
+      gsap.to(".circle", {
+        duration: 10,
+        x: "+=400",
+        y: "+=300",
+        repeat: -1,
+        yoyo: true,
+        stagger: 0.4,
+        ease: "power3.inOut",
+      });
+    }
+  }, [circles]);
+
+  return (
+    <div className="relative min-h-screen overflow-hidden overflow-x">
+      <video
+        autoPlay
+        muted
+        loop
+        className="absolute inset-0 object-cover w-full h-full"
+      >
+        <source src={bgHere} type="video/mp4" />
+      </video>
+
+      <header className=" relative z-10 w-full">
+        <div className="container mx-auto flex justify-between items-center py-4 px-6">
+          <div className="flex items-center">
+            <img src={logo} alt="Athletiqo logo" className="h-10 w-10" />
+            <span className="ml-2 text-2xl font-bold text-white">
+              Athletiqo
+            </span>
+          </div>
+          <nav className="flex items-center space-x-6">
+            <div className="hidden sm:flex space-x-6">
+              <NavLink to="/login">
+                <button className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-full text-lg font-semibold cursor-pointer shadow-md hover:shadow-lg transition duration-300 transform hover:scale-105">
+                  Already user
+                </button>
+              </NavLink>
+
+              <NavLink to="/register">
+                <button className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-full text-lg font-semibold cursor-pointer shadow-md hover:shadow-lg transition duration-300 transform hover:scale-105">
+                  Create Account
+                </button>
+              </NavLink>
+            </div>
+
+            <div className="sm:hidden flex space-x-4">
+              <NavLink to="/login">
+                <button className="bg-blue-600 text-white p-2 rounded-full cursor-pointer shadow-md hover:shadow-lg transition duration-300 transform hover:scale-105">
+                  <FaUser />
+                </button>
+              </NavLink>
+
+              <NavLink to="/register">
+                <button className="bg-green-600 text-white p-2 rounded-full cursor-pointer shadow-md hover:shadow-lg transition duration-300 transform hover:scale-105">
+                  <FaUserPlus />
+                </button>
+              </NavLink>
+            </div>
+          </nav>
         </div>
-      </div>
+      </header>
+
+      <main className="container mx-auto px-6 py-12 relative z-10 flex items-center justify-center h-[calc(100vh-80px)]">
+        <div className="text-center">
+          <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold text-white leading-tight">
+            Athletiqo: Your Health, Our Priority
+          </h1>
+        </div>
+
+        <div className="absolute inset-0 z-0">
+          {circles.map((circle, index) => (
+            <div
+              key={index}
+              className="circle absolute rounded-full bg-opacity-50 cursor-pointer"
+              style={{
+                width: `${circle.size}px`,
+                height: `${circle.size}px`,
+                left: `${circle.xPos}px`,
+                top: `${circle.yPos}px`,
+                backgroundColor: `hsl(${Math.random() * 360}, 70%, 60%)`,
+                animationDelay: `${circle.animationDelay}s`,
+              }}
+            ></div>
+          ))}
+        </div>
+      </main>
     </div>
   );
 };

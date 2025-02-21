@@ -1,8 +1,12 @@
 const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
 const bcrypt = require("bcryptjs");
+const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
+  firstName: {
+    type: String,
+    required: true,
+  },
   email: {
     type: String,
     required: true,
@@ -12,43 +16,43 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
-  username: {
+  confirmPassword: {
     type: String,
     required: true,
   },
-  currentDay: {
-    type: Date,
-    default: Date.now,
+  currentWeight: {
+    type: Number,
+    required: true,
+  },
+  targetWeight: {
+    type: Number,
+    required: true,
+  },
+  sleepGoal: {
+    type: Number,
+    required: true,
+  },
+  readingGoal: {
+    type: Number,
+    required: true,
+  },
+  waterGoal: {
+    type: Number,
+    required: true,
   },
   age: {
     type: Number,
     required: true,
   },
-  weightNow: {
-    type: Number,
-    required: true,
-  },
-  weightWant: {
-    type: Number,
-    required: true,
-  },
-  heartIssue: {
+  isWorkingPerson: {
     type: Boolean,
-    required: true,
   },
-  isWorking: {
+  hasHeartIssue: {
     type: Boolean,
-    required: true,
   },
-
-  isWorking: {
-    type: Boolean,
-    required: true,
-  },
-  activityData: {
-    water: [Number],
-    sleep: [Number],
-    points: [Number],
+  currentDay: {
+    type: Date,
+    default: Date.now,
   },
 });
 

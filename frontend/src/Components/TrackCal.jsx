@@ -1,33 +1,61 @@
-import React, { useState } from "react";
-import { FcIdea } from "react-icons/fc";
+import React, { useContext, useEffect, useState } from "react";
 import { GiElectric } from "react-icons/gi";
 import Diet from "../images/diet.png";
+import { userContextData } from "../context/UserContext";
 
 function TrackCal(props) {
   const [waterLevel, setWaterLevel] = useState(0);
   const [calories, setCalories] = useState(0);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
+  const { userData } = useContext(userContextData);
+
+  const age = userData?.user?.age || 0;
+
+  const [mealCalories, setMealCalories] = useState({
+    breakfast: { calory: 0, isCompltere: false },
+    lunch: { calory: 0, isCompltere: false },
+    dinner: { calory: 0, isCompltere: false },
+  });
+
+  useEffect(() => {
+    let updatedMealCalories = {};
+
+    if (age <= 20) {
+      updatedMealCalories = {
+        breakfast: { calory: 350, isCompltere: false },
+        lunch: { calory: 450, isCompltere: false },
+        dinner: { calory: 400, isCompltere: false },
+      };
+    } else if (age > 20 && age <= 40) {
+      updatedMealCalories = {
+        breakfast: { calory: 500, isCompltere: false },
+        lunch: { calory: 700, isCompltere: false },
+        dinner: { calory: 600, isCompltere: false },
+      };
+    } else if (age > 40 && age <= 60) {
+      updatedMealCalories = {
+        breakfast: { calory: 450, isCompltere: false },
+        lunch: { calory: 650, isCompltere: false },
+        dinner: { calory: 550, isCompltere: false },
+      };
+    } else if (age > 60) {
+      updatedMealCalories = {
+        breakfast: { calory: 400, isCompltere: false },
+        lunch: { calory: 600, isCompltere: false },
+        dinner: { calory: 500, isCompltere: false },
+      };
+    }
+
+    setMealCalories(updatedMealCalories);
+  }, [age]);
+
+  // Track selected meals
   const [selectedMeals, setSelectedMeals] = useState({
     breakfast: false,
     lunch: false,
     dinner: false,
   });
-
-  const mealCalories = {
-    breakfast: {
-      calory: 500,
-      isCompltere: false,
-    },
-    lunch: {
-      calory: 800,
-      isCompltere: false,
-    },
-    dinner: {
-      calory: 700,
-      isCompltere: false,
-    },
-  };
 
   const totalCalories = Object.values(mealCalories).reduce((sum, meal) => {
     return sum + meal.calory;
@@ -71,7 +99,7 @@ function TrackCal(props) {
                 Track Food
               </h3>
               <p className="text-gray-600">{calories} cal</p>
-            </div>
+            </div>                                               
             <button
               onClick={togglePopup}
               className="bg-blue-500 text-white py-2 px-4 rounded-lg shadow-md mt-4"

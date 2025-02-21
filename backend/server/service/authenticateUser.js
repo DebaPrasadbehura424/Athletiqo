@@ -8,7 +8,10 @@ const authenticateUser = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, "your_jwt_secret");
+    const decoded = jwt.verify(
+      token,
+      "NeuranovaAthlenticoanuragdebakarankamanaanshikaweareteams@!IAMDEV"
+    );
     req.userId = decoded.userId;
     next();
   } catch (err) {

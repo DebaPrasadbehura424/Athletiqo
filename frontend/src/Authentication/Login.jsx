@@ -1,27 +1,31 @@
 import React, { useState } from "react";
-import axios from "axios";
-import { NavLink } from "react-router-dom";
-import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
-import Cookies from "universal-cookie";
+import { FaCheckCircle } from "react-icons/fa";
+import { AiOutlineMail, AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
+import { FiLock } from "react-icons/fi";
+import { RiGoogleFill } from "react-icons/ri";
+import loginImages from "../images/login.jpg";
+import axios from "axios"; // Import axios
+import Swal from "sweetalert2"; // Import SweetAlert2
+import Cookies from "universal-cookie"; // Import Cookies
 
-function Login() {
+const Login = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
   const cookies = new Cookies();
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
 
   const handleEmailChange = (e) => setEmail(e.target.value);
   const handlePasswordChange = (e) => setPassword(e.target.value);
-  const clearForm = () => {
-    setEmail("");
-    setPassword("");
-    setError("");
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!email || !password) {
       Swal.fire({
         icon: "error",
@@ -30,6 +34,7 @@ function Login() {
       });
       return;
     }
+
     try {
       const response = await axios.post(
         "http://localhost:5000/user/userLogin",
@@ -48,7 +53,6 @@ function Login() {
         });
       }
     } catch (err) {
-      setError("Invalid email or password");
       Swal.fire({
         icon: "error",
         title: "Login Failed!",
@@ -59,88 +63,176 @@ function Login() {
   };
 
   return (
-    <div className="max-w-md mx-auto p-8 bg-white shadow-lg rounded-lg mt-20">
-      <h2 className="text-2xl font-semibold text-center text-gray-700 mb-6">
-        Login
-      </h2>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-5">
-          <label
-            htmlFor="email"
-            className="block text-gray-600 text-sm font-semibold mb-2"
-          >
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={handleEmailChange}
-            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-            required
-          />
-        </div>
-        <div className="mb-5">
-          <label
-            htmlFor="password"
-            className="block text-gray-600 text-sm font-semibold mb-2"
-          >
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            placeholder="Enter your password"
-            value={password}
-            onChange={handlePasswordChange}
-            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-            required
-          />
+    <section className="bg-white">
+      <div className="grid grid-cols-1 lg:grid-cols-2">
+        <div className="relative hidden md:flex items-end px-4 min-h-screen pb-10 pt-60 sm:pb-16 md:justify-center lg:pb-24 bg-gray-50 sm:px-6 lg:px-8">
+          <div className="absolute inset-0">
+            <img
+              className="object-cover  w-full h-full"
+              src={loginImages}
+              alt="Fitness"
+            />
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
+
+          <div className="relative">
+            <div className="w-full max-w-xl xl:w-full xl:mx-auto xl:pr-24 xl:max-w-xl">
+              <h3 className="text-4xl font-bold text-white">
+                Join 35k+ Health Enthusiasts &{" "}
+                <br className="hidden xl:block" />
+                Kickstart Your Fitness Journey
+              </h3>
+              <ul className="grid grid-cols-1 mt-10 sm:grid-cols-2 gap-x-8 gap-y-4">
+                {/* Feature List */}
+                <li className="flex items-center space-x-3">
+                  <div className="inline-flex items-center justify-center flex-shrink-0 w-5 h-5 bg-blue-500 rounded-full">
+                    <FaCheckCircle className="w-3.5 h-3.5 text-white" />
+                  </div>
+                  <span className="text-lg font-medium text-white">
+                    Personalized Yoga Plans
+                  </span>
+                </li>
+                <li className="flex items-center space-x-3">
+                  <div className="inline-flex items-center justify-center flex-shrink-0 w-5 h-5 bg-blue-500 rounded-full">
+                    <FaCheckCircle className="w-3.5 h-3.5 text-white" />
+                  </div>
+                  <span className="text-lg font-medium text-white">
+                    Fitness Tracking & Insights
+                  </span>
+                </li>
+                <li className="flex items-center space-x-3">
+                  <div className="inline-flex items-center justify-center flex-shrink-0 w-5 h-5 bg-blue-500 rounded-full">
+                    <FaCheckCircle className="w-3.5 h-3.5 text-white" />
+                  </div>
+                  <span className="text-lg font-medium text-white">
+                    Expert Health Tips
+                  </span>
+                </li>
+                <li className="flex items-center space-x-3">
+                  <div className="inline-flex items-center justify-center flex-shrink-0 w-5 h-5 bg-blue-500 rounded-full">
+                    <FaCheckCircle className="w-3.5 h-3.5 text-white" />
+                  </div>
+                  <span className="text-lg font-medium text-white">
+                    Workout Routines for All Levels
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
 
-        {error && (
-          <div className="text-red-500 text-sm mb-4 text-center">{error}</div>
-        )}
+        {/* Right Side Section */}
+        <div className="flex items-center justify-center px-4 py-10 bg-white sm:px-6 lg:px-8 sm:py-16 lg:py-24">
+          <div className="xl:w-full xl:max-w-sm 2xl:max-w-md xl:mx-auto  p-4">
+            <h1 className="text-2xl font-bold mt-6">
+              Welcome Back! Ready to Dive In?
+            </h1>
+            <p className="mt-2 text-base text-gray-600">
+              Don't have an account?{" "}
+              <a
+                href="#"
+                onClick={() => navigate("/register")}
+                className="font-medium text-blue-600 transition-all duration-200 hover:text-blue-700 focus:text-blue-700 hover:underline"
+              >
+                Sign Up
+              </a>
+            </p>
 
-        <div className="flex justify-between items-center">
-          <button
-            type="submit"
-            className="w-full bg-green-500 text-white py-3 rounded-md font-semibold transition duration-300 hover:bg-green-600"
-          >
-            Login
-          </button>
-          <button
-            type="button"
-            onClick={clearForm}
-            className="ml-3 w-full bg-gray-300 text-white py-3 rounded-md font-semibold transition duration-300 hover:bg-gray-400"
-          >
-            Clear
-          </button>
+            {/* Login Form */}
+            <form onSubmit={handleSubmit} className="mt-8">
+              <div className="space-y-5">
+                <div>
+                  <label className="text-base font-medium text-gray-900">
+                    Email Address
+                  </label>
+                  <div className="mt-2.5 relative text-gray-400 focus-within:text-gray-600">
+                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                      <AiOutlineMail className="w-5 h-5" />
+                    </div>
+                    <input
+                      type="email"
+                      placeholder="Enter your email"
+                      value={email}
+                      onChange={handleEmailChange}
+                      className="block w-full py-4 pl-10 pr-4 text-black placeholder-gray-500 transition-all duration-200 border border-gray-200 rounded-md bg-gray-50 focus:outline-none focus:border-blue-600 focus:bg-white caret-blue-600"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-base font-medium text-gray-900">
+                    Password
+                  </label>
+                  <div className="mt-2.5 relative text-gray-400 focus-within:text-gray-600">
+                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                      <FiLock className="w-5 h-5" />
+                    </div>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your password"
+                      value={password}
+                      onChange={handlePasswordChange}
+                      className="block w-full py-4 pl-10 pr-4 text-black placeholder-gray-500 transition-all duration-200 border border-gray-200 rounded-md bg-gray-50 focus:outline-none focus:border-blue-600 focus:bg-white caret-blue-600"
+                    />
+                    <button
+                      type="button"
+                      onClick={togglePasswordVisibility}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    >
+                      {showPassword ? (
+                        <AiFillEyeInvisible className="w-5 h-5" />
+                      ) : (
+                        <AiFillEye className="w-5 h-5" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <button
+                    type="submit"
+                    className="inline-flex items-center justify-center w-full px-4 py-4 text-base font-semibold text-white transition-all duration-200 border border-transparent rounded-md bg-gradient-to-r from-fuchsia-600 to-blue-600 focus:outline-none hover:opacity-80 focus:opacity-80"
+                  >
+                    Continue with your Gmail
+                  </button>
+                </div>
+              </div>
+            </form>
+
+            {/* Social Login */}
+            <div className="mt-3 space-y-3">
+              <button
+                type="button"
+                className="relative inline-flex items-center justify-center w-full px-4 py-4 text-base font-semibold text-gray-700 transition-all duration-200 bg-white border-2 border-gray-200 rounded-md hover:bg-gray-100 focus:bg-gray-100 hover:text-black focus:text-black focus:outline-none"
+              >
+                <div className="absolute inset-y-0 left-0 p-4">
+                  <RiGoogleFill className="w-6 h-6 text-rose-500" />
+                </div>
+                Sign up with Google
+              </button>
+            </div>
+
+            <p className="mt-5 text-sm text-gray-600">
+              This site is protected by reCAPTCHA and the Google{" "}
+              <a
+                href="#"
+                className="text-blue-600 transition-all duration-200 hover:underline hover:text-blue-700"
+              >
+                Privacy Policy
+              </a>{" "}
+              &{" "}
+              <a
+                href="#"
+                className="text-blue-600 transition-all duration-200 hover:underline hover:text-blue-700"
+              >
+                Terms of Service
+              </a>
+            </p>
+          </div>
         </div>
-      </form>
-
-      <div className="text-center mt-6">
-        <p className="text-sm text-gray-600">
-          Don't have an account?{" "}
-          <NavLink
-            to="/register"
-            className="text-green-500 font-semibold hover:text-green-600"
-          >
-            Create one here
-          </NavLink>
-        </p>
-        <p className="text-sm text-gray-600 mt-2">
-          <NavLink
-            to="/forgot-password"
-            className="text-green-500 font-semibold hover:text-green-600"
-          >
-            Forgot Password?
-          </NavLink>
-        </p>
       </div>
-    </div>
+    </section>
   );
-}
+};
 
 export default Login;
