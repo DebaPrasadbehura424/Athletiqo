@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const userModel = require("../model/userModel");
 const jwt = require("jsonwebtoken");
+const Plan = require("../model/PlansModel");
 
 module.exports.RegisterUser = async (req, res) => {
   const {
@@ -19,27 +20,32 @@ module.exports.RegisterUser = async (req, res) => {
   } = req.body;
 
   try {
-    // Check if the user already exists by email
     const isUserExist = await userModel.findOne({ email });
 
     if (isUserExist) {
       return res.status(400).json({ message: "User already exists!" });
     }
 
-    // Check if password and confirmPassword match
     if (password !== confirmPassword) {
       return res.status(400).json({ message: "Passwords do not match!" });
     }
 
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create a new user object
+    const Plans = new Plan({
+      user: null,
+      sections: [
+        { title: "Personal Goals", tasks: [] },
+        { title: "Today's Goals", tasks: [] },
+      ],
+    });
+    const saveNewPlan = await Plans.save();
+
     const newUser = new userModel({
       firstName,
       email,
       password: hashedPassword,
-      confirmPassword: hashedPassword, // Store hashed password for confirmPassword field as well
+      confirmPassword: hashedPassword,
       age,
       currentWeight,
       targetWeight,
@@ -48,19 +54,21 @@ module.exports.RegisterUser = async (req, res) => {
       waterGoal,
       isWorkingPerson,
       hasHeartIssue,
+      planList: saveNewPlan._id,
     });
 
-    // Save the new user to the database
     const savedUser = await newUser.save();
 
-    // Create a JWT token for the user
+    saveNewPlan.user = savedUser._id;
+
+    await saveNewPlan.save();
+
     const token = jwt.sign(
       { userId: savedUser._id, email: savedUser.email },
       "NeuranovaAthlenticoanuragdebakarankamanaanshikaweareteams@!IAMDEV",
       { expiresIn: "24h" }
     );
 
-    // Return success response with the saved user details and token
     res.status(201).json({
       message: "User registered successfully",
       token,

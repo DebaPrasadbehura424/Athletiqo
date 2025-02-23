@@ -1,130 +1,232 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Swal from "sweetalert2";
+import andoutjacks from "../workoutwomen/andoutjacks.gif";
+import baamboozle from "../workoutwomen/baambozzle.gif";
+import bicepsstrech from "../workoutwomen/bicpesstrech.gif";
+import hourGlass from "../images/hourglass.gif";
 
-function YogaExcercise(props) {
-  const [activeTab, setActiveTab] = useState("Yoga");
-
-  const yogaItems = [
+function Workout() {
+  const workoutItems = [
     {
-      name: "Downward Dog",
-      description: "A yoga pose to stretch the body",
-      duration: "Hold for 30 seconds",
-      image: "https://www.yogajournal.com/.image/t_share/MTQ2MTgwNjA3NjAzMTExMzQ1/downward-dog-pose.jpg", // Real image URL
+      name: "Andout Jacks",
+      image: andoutjacks,
+      repetitions: "x30",
+      description: "A great cardio exercise to warm up the body.",
     },
     {
-      name: "Tree Pose",
-      description: "A balance pose to strengthen the legs",
-      duration: "Hold for 30 seconds",
-      image: "https://www.yogajournal.com/.image/t_share/MTQ2MTgwNjA3NjAzMTExMzQ3/tree-pose.jpg", // Real image URL
+      name: "Baamboozle",
+      image: baamboozle,
+      repetitions: "x30",
+      description: "A fun exercise for improving coordination and agility.",
     },
     {
-      name: "Child's Pose",
-      description: "A resting pose for relaxation",
-      duration: "Hold for 1 minute",
-      image: "https://www.yogajournal.com/.image/t_share/MTQ2MTgwNjA3NjAzMTExMzQ8/childs-pose.jpg", // Real image URL
+      name: "Biceps Stretch",
+      image: bicepsstrech,
+      repetitions: "x20",
+      description: "Helps in increasing biceps flexibility.",
     },
   ];
 
-  const exerciseItems = [
-    {
-      name: "Push-ups",
-      description: "A basic upper body exercise",
-      repetitions: "Do 15 reps",
-      image: "https://www.verywellfit.com/thmb/d4EDjsCIoZGpC_bV5ImRh_mrHjc=/4500x3000/filters:fill(FFDB5D,1)/push-ups-56c9c7e85f9b5855a3f8e8e5.jpg", // Real image URL
-    },
-    {
-      name: "Squats",
-      description: "A leg exercise to build strength",
-      repetitions: "Do 20 reps",
-      image: "https://www.verywellfit.com/thmb/xuGh2FSwmaFT7eVvhzTtsdHCycs=/3000x2000/filters:fill(FFDB5D,1)/squat-exercise-56c9c6c85f9b5855a3f8e8e2.jpg", // Real image URL
-    },
-    {
-      name: "Planks",
-      description: "Core strengthening exercise",
-      repetitions: "Hold for 1 minute",
-      image: "https://www.verywellfit.com/thmb/XHmbQmzZTqPzYr3KBG1AZDjaC8I=/4000x2667/filters:fill(FFDB5D,1)/plank-exercise-56c9c7745f9b5855a3f8e8df.jpg", // Real image URL
-    },
-  ];
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [timer, setTimer] = useState(30); 
+  const [isWorkoutActive, setIsWorkoutActive] = useState(false);
+  const [resting, setResting] = useState(false); 
+  const [isTimerStopped, setIsTimerStopped] = useState(false); 
+
+  useEffect(() => {
+    let interval;
+
+    if (isWorkoutActive && !resting && timer > 0 && !isTimerStopped) {
+      interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    else if (timer === 0 && currentIndex < workoutItems.length - 1) {
+      setResting(true); 
+      setTimer(10); 
+    }
+    else if (timer === 0 && resting && currentIndex < workoutItems.length - 1) {
+      setResting(false); 
+      setCurrentIndex((prevIndex) => prevIndex + 1);
+      setTimer(30);
+    }
+    else if (timer === 0 && currentIndex === workoutItems.length - 1) {
+      Swal.fire({
+        title: "Workout Complete!",
+        text: "Congratulations, you've completed today's workout!",
+        icon: "success",
+        showCancelButton: true,
+        confirmButtonText: "Restart",
+        cancelButtonText: "End",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          setCurrentIndex(0);
+          setTimer(30);
+          setIsWorkoutActive(true);
+        } else {
+          setIsWorkoutActive(false);
+        }
+      });
+    }
+
+    return () => clearInterval(interval);
+  }, [isWorkoutActive, timer, currentIndex, resting, isTimerStopped]);
+
+  const startWorkout = () => {
+    setIsWorkoutActive(true);
+    setTimer(30); 
+  };
+
+  const stopTimer = () => {
+    setIsTimerStopped(true);
+  };
+
+  const resumeTimer = () => {
+    setIsTimerStopped(false); 
+  };
+
+  const restartWorkout = () => {
+    setTimer(30);
+    setIsWorkoutActive(true);
+    setResting(false);
+    setIsTimerStopped(false);
+  };
+
+  const goToNext = () => {
+    if (currentIndex < workoutItems.length - 1) {
+      setCurrentIndex((prevIndex) => prevIndex + 1);
+      setTimer(30);
+      setResting(false);
+    }
+  };
+
+  const goToPrev = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex((prevIndex) => prevIndex - 1);
+      setTimer(30); 
+      setResting(false);
+    }
+  };
 
   return (
-    <div className="p-4">
-      <div className="mb-8">
-        <div className="bg-gray-300 h-56 flex justify-center items-center text-xl font-bold">
-          <p>Video/Audio/Images Section</p>
-        </div>
+    <div className="p-6 max-w-5xl mx-auto bg-gray-50">
+      {/* Title Section */}
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold text-blue-600">Your Daily Workout</h1>
+        <p className="text-gray-600 mt-2">
+          Stay fit and healthy with these exercises!
+        </p>
       </div>
 
-      <div className="flex justify-center space-x-4 mb-6">
-        <button
-          onClick={() => setActiveTab("Yoga")}
-          className={`py-2 px-4 rounded-md text-white transition-colors ${
-            activeTab === "Yoga" ? "bg-blue-500" : "bg-gray-500"
-          }`}
-        >
-          Yoga
-        </button>
-        <button
-          onClick={() => setActiveTab("Exercise")}
-          className={`py-2 px-4 rounded-md text-white transition-colors ${
-            activeTab === "Exercise" ? "bg-blue-500" : "bg-gray-500"
-          }`}
-        >
-          Exercise
-        </button>
-      </div>
+      <div className="flex flex-col items-center mb-6">
+        {isWorkoutActive && !resting ? (
+          <div className="w-full max-w-3xl bg-white p-8 rounded-lg shadow-lg flex flex-col items-center">
+            <h2 className="text-3xl font-semibold text-blue-600">
+              {workoutItems[currentIndex].name}
+            </h2>
+            <p className="text-gray-500 mt-2 text-xl">
+              {workoutItems[currentIndex].description}
+            </p>
 
-      <div className="transition-all">
-        {activeTab === "Yoga" ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {yogaItems.map((item, index) => (
-              <div
-                key={index}
-                className="bg-white p-4 rounded-md shadow-md hover:scale-105 transition-all flex"
-              >
-                <div className="w-2/3 pr-4">
-                  <h3 className="text-xl font-semibold text-blue-600">
-                    {item.name}
-                  </h3>
-                  <p className="text-gray-600">{item.description}</p>
-                  <p className="text-gray-500">{item.duration}</p>
-                </div>
-                <div className="w-1/3 pl-4">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="w-full h-full object-cover rounded-md"
-                  />
-                </div>
+            {isTimerStopped ? (
+              <img src={hourGlass} alt="hourglass" className="h-72" />
+            ) : (
+              <img
+                src={workoutItems[currentIndex].image}
+                alt={workoutItems[currentIndex].name}
+                className="w-full h-72 object-cover rounded-md mt-4"
+              />
+            )}
+
+            <p className="mt-4 text-lg text-gray-700">Time Left: {timer}s</p>
+            {isTimerStopped ? (
+              <div className="flex justify-center mb-2 mt-2">
+                <button
+                  onClick={resumeTimer}
+                  className="px-6 py-2 bg-green-600 text-white rounded-md text-xl font-medium hover:bg-green-700 transition duration-300"
+                >
+                  Start Timer
+                </button>
               </div>
-            ))}
+            ) : (
+              <div className="flex justify-center mb-2 mt-2">
+                <button
+                  onClick={stopTimer}
+                  className="px-6 py-2 bg-red-600 text-white rounded-md text-lg font-medium hover:bg-red-700 transition duration-300"
+                >
+                  Stop Timer
+                </button>
+              </div>
+            )}
+          </div>
+        ) : resting ? (
+          <div className="w-full max-w-3xl bg-white p-8 rounded-lg shadow-lg flex flex-col items-center">
+            <h2 className="text-3xl font-semibold text-blue-600">Rest Time</h2>
+            <p className="text-gray-500 mt-2 text-xl">Take a 10-second rest!</p>
+            <p className="mt-4 text-lg text-gray-700">Time Left: {timer}s</p>
+            <div className="mt-4 space-x-4">
+              <button
+                onClick={goToNext}
+                className="px-6 py-2 bg-blue-600 text-white rounded-md text-lg font-medium hover:bg-blue-700 transition duration-300"
+              >
+                Next
+              </button>
+              <button
+                onClick={goToPrev}
+                className="px-6 py-2 bg-gray-600 text-white rounded-md text-lg font-medium hover:bg-gray-700 transition duration-300"
+              >
+                Prev
+              </button>
+            </div>
           </div>
         ) : (
-          <div className="space-y-4">
-            {exerciseItems.map((item, index) => (
-              <div
-                key={index}
-                className="bg-white p-4 rounded-md shadow-md hover:scale-105 transition-all flex"
-              >
-                <div className="w-2/3 pr-4">
-                  <h3 className="text-xl font-semibold text-green-600">
-                    {item.name}
-                  </h3>
-                  <p className="text-gray-600">{item.description}</p>
-                  <p className="text-gray-500">{item.repetitions}</p>
-                </div>
-                <div className="w-1/3 pl-4">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="w-full h-full object-cover rounded-md"
-                  />
-                </div>
-              </div>
-            ))}
+          <div className="w-full max-w-3xl bg-white p-8 rounded-lg shadow-lg flex flex-col items-center">
+            <p className="text-xl text-gray-700">
+              Click "Start Workout" to begin your session!
+            </p>
           </div>
         )}
+      </div>
+
+      {!isWorkoutActive && (
+        <div className="flex justify-center mb-6">
+          <button
+            onClick={startWorkout}
+            className="px-6 py-2 bg-blue-600 text-white rounded-md text-xl font-medium hover:bg-blue-700 transition duration-300"
+          >
+            Start Workout
+          </button>
+        </div>
+      )}
+
+      {isWorkoutActive && !resting && (
+        <div className="flex justify-center space-x-4 mt-6">
+          <button
+            onClick={goToPrev}
+            className="px-6 py-2 bg-gray-600 text-white rounded-md text-lg font-medium hover:bg-gray-700 transition duration-300"
+          >
+            Prev
+          </button>
+          <button
+            onClick={goToNext}
+            className="px-6 py-2 bg-blue-600 text-white rounded-md text-lg font-medium hover:bg-blue-700 transition duration-300"
+          >
+            Next
+          </button>
+        </div>
+      )}
+
+      <div className="text-center mt-8 text-gray-500">
+        <p>
+          Credit goes to{" "}
+          <a href="https://www.spotbi.com" className="text-blue-600">
+            SPOTBI.COM
+          </a>{" "}
+          for the images used.
+        </p>
       </div>
     </div>
   );
 }
 
-export default YogaExcercise;
+export default Workout;

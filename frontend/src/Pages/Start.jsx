@@ -3,7 +3,6 @@ import { gsap } from "gsap";
 import { NavLink } from "react-router-dom";
 import { FaUser, FaUserPlus } from "react-icons/fa";
 import bgHere from "../vedios/ved3.mp4";
-import logo from "../images/meditation.png";
 
 const Start = () => {
   const [circles, setCircles] = useState([]);
@@ -60,7 +59,7 @@ const Start = () => {
       <header className=" relative z-10 w-full">
         <div className="container mx-auto flex justify-between items-center py-4 px-6">
           <div className="flex items-center">
-            <img src={logo} alt="Athletiqo logo" className="h-10 w-10" />
+            <img src="hh.png" alt="Athletiqo logo" className="h-10 w-10" />
             <span className="ml-2 text-2xl font-bold text-white">
               Athletiqo
             </span>

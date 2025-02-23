@@ -54,6 +54,10 @@ const userSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  todoList: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Plan",
+  },
 });
 
 userSchema.methods.comparePassword = async function (candidatePassword) {

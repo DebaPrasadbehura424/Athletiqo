@@ -7,6 +7,7 @@ const app = express();
 
 // Routes
 const userRoutes = require("./server/routes/userRoutes");
+const planRoutes = require("./server/routes/plansRoute");
 
 dotenv.config();
 connectDB();
@@ -23,5 +24,6 @@ app.get("/", (req, res) => {
 
 // API Routes
 app.use("/user", userRoutes);
+app.use("/plans", planRoutes);
 
 module.exports = app;

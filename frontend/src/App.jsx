@@ -4,14 +4,13 @@ import GraphTrack from "./Pages/GraphTrack";
 import StreakTracker from "./Pages/StreakTracker";
 import Plans from "./Pages/Plans";
 import Leadership from "./Pages/leaderBoard";
-// import Todo from "./Pages/Todo";
 import YogaExcercise from "./Pages/YogaExcercise";
 import Register from "./Authentication/Register";
 import DashBoard from "./Pages/DashBoard";
 import Start from "./Pages/Start";
 import HomeProtector from "./Protect/HomeProtector";
 import Login from "./Authentication/Login";
-
+// https://gifer.com/en/gifs/exercise
 function App() {
   return (
     <Routes>
@@ -34,8 +33,6 @@ function App() {
 
       <Route path="/register" element={<Register />} />
       <Route path="/login" element={<Login />} />
-
-      {/* <Route path="/todo" element={<Todo />} /> */}
     </Routes>
   );
 }

@@ -5,9 +5,9 @@ import { AiOutlineMail, AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { FiLock } from "react-icons/fi";
 import { RiGoogleFill } from "react-icons/ri";
 import loginImages from "../images/login.jpg";
-import axios from "axios"; // Import axios
-import Swal from "sweetalert2"; // Import SweetAlert2
-import Cookies from "universal-cookie"; // Import Cookies
+import axios from "axios";
+import Swal from "sweetalert2";
+import Cookies from "universal-cookie";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -48,7 +48,9 @@ const Login = () => {
           text: "Welcome back to your account.",
         }).then(() => {
           const token = response.data.token;
+          const userId = response.data.user._id;
           cookies.set("token", token);
+          cookies.set("userId", userId);
           navigate("/progress");
         });
       }
