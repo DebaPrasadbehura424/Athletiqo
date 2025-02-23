@@ -9,7 +9,6 @@ import {
 import axios from "axios";
 import Cookies from "universal-cookie";
 import shopping from "../images/work-order.png";
-import trash from "../images/bin.gif";
 import list from "../images/list.gif";
 
 function Plans() {
@@ -18,22 +17,41 @@ function Plans() {
 
   const [sections, setSections] = useState([]);
   const [newSection, setNewSection] = useState("");
-  const [editing, setEditing] = useState(null);
   const [newTask, setNewTask] = useState("");
-  const [taskId, setTaskId] = useState(null);
+  const [editing, setEditing] = useState(null);
 
   useEffect(() => {
     axios
       .get(`http://localhost:5000/plans/${userId}/getAll`)
       .then((response) => {
-        if (response.status === 200 && response.data[0].sections) {
-          setSections(response.data[0].sections);
+        if (response.status === 200 && response.data) {
+          setSections(response.data);
         }
       })
       .catch((err) => {
         console.error("Error fetching data:", err);
       });
-  }, [userId, setSections]);
+  }, [userId]);
+
+  // Add new section
+  const addSection = async () => {
+    if (!newSection.trim()) return;
+
+    try {
+      const response = await axios.post(
+        `http://localhost:5000/plans/${userId}/section`,
+        { title: newSection }
+      );
+
+      if (response.status === 201) {
+        setSections((prevSections) => [...prevSections, response.data]);
+      }
+    } catch (error) {
+      console.error("Error adding section:", error);
+    } finally {
+      setNewSection(""); // Clear the input field
+    }
+  };
 
   // Add a new task
   const addTask = async (sectionId) => {
@@ -50,7 +68,7 @@ function Plans() {
         section._id === sectionId
           ? {
               ...section,
-              tasks: [...section.tasks, newTaskObject],
+              tasks: [...section.tasks, { ...newTaskObject, _id: Date.now() }],
             }
           : section
       )
@@ -69,7 +87,7 @@ function Plans() {
               ? {
                   ...section,
                   tasks: section.tasks.map((task) =>
-                    task.task === newTaskObject.task
+                    task._id === newTaskObject._id
                       ? { ...task, _id: response.data._id }
                       : task
                   ),
@@ -80,45 +98,48 @@ function Plans() {
       }
     } catch (err) {
       console.error("Error adding task:", err);
+      // Rollback in case of error by filtering based on temporary _id
       setSections((prev) =>
         prev.map((section) =>
           section._id === sectionId
             ? {
                 ...section,
                 tasks: section.tasks.filter(
-                  (task) => task.task !== newTaskObject.task
+                  (task) => task._id !== newTaskObject._id
                 ),
               }
             : section
         )
       );
     } finally {
-      setNewTask("");
+      setNewTask(""); // Clear task input field
     }
   };
 
-  // Delete a task
+  // Delete task
   const deleteTask = async (sectionId, taskId) => {
-    // try {
-    //   await axios.delete(
-    //     `http://localhost:5000/plans/${userId}/delete/${sectionId}/sectionId/${taskId}/taskId`
-    //   );
-    //   setSections((prev) =>
-    //     prev.map((section) =>
-    //       section._id === sectionId
-    //         ? {
-    //             ...section,
-    //             tasks: section.tasks.filter((task) => task._id !== taskId),
-    //           }
-    //         : section
-    //     )
-    //   );
-    // } catch (err) {
-    //   console.error("Error deleting task:", err);
-    // }
+    setSections((prev) =>
+      prev.map((section) =>
+        section._id === sectionId
+          ? {
+              ...section,
+              tasks: section.tasks.filter((task) => task._id !== taskId),
+            }
+          : section
+      )
+    );
+
+    try {
+      await axios.delete(
+        `http://localhost:5000/plans/${userId}/delete/${sectionId}/sectionId/${taskId}/taskId`
+      );
+    } catch (err) {
+      console.error("Error deleting task:", err);
+      // Optionally, you can rollback on error by re-adding the task
+    }
   };
 
-  // Delete a section
+  // Delete section
   const deleteSection = async (sectionId) => {
     try {
       await axios.delete(
@@ -133,25 +154,8 @@ function Plans() {
     }
   };
 
-  const addSection = async () => {
-    if (!newSection.trim()) return;
-    try {
-      const response = await axios.post(
-        "http://localhost:5000/plans/67b9e23e5277da3e7cc19f30/section",
-        { title: newSection }
-      );
-
-      if (response.status === 201) {
-        setSections((prevSections) => [...prevSections, response.data]);
-      }
-    } catch (error) {
-      console.error("Error adding section:", error);
-    } finally {
-      setNewSection("");
-    }
-  };
-
-  const editTask = (sectionId, taskId, updatedTask) => {
+  // Edit task
+  const editTask = async (sectionId, taskId, updatedTask) => {
     setSections((prev) =>
       prev.map((section) =>
         section._id === sectionId
@@ -164,8 +168,46 @@ function Plans() {
           : section
       )
     );
+
+    try {
+      const response = await axios.put(
+        `http://localhost:5000/plans/${userId}/section/${sectionId}/task/${taskId}`,
+        { task: updatedTask }
+      );
+
+      if (response.status === 200) {
+        setSections((prev) =>
+          prev.map((section) =>
+            section._id === sectionId
+              ? {
+                  ...section,
+                  tasks: section.tasks.map((task) =>
+                    task._id === taskId ? { ...task, task: updatedTask } : task
+                  ),
+                }
+              : section
+          )
+        );
+      }
+    } catch (err) {
+      console.error("Error editing task:", err);
+      // Rollback if update fails
+      setSections((prev) =>
+        prev.map((section) =>
+          section._id === sectionId
+            ? {
+                ...section,
+                tasks: section.tasks.map((task) =>
+                  task._id === taskId ? { ...task, task: task.task } : task
+                ),
+              }
+            : section
+        )
+      );
+    }
   };
 
+  // Toggle section visibility
   const toggleSectionVisibility = (sectionId) => {
     setSections((prev) =>
       prev.map((section) =>
@@ -193,13 +235,13 @@ function Plans() {
             onClick={addSection}
             className="py-2 px-5 bg-green-500 text-white rounded-lg cursor-pointer"
           >
-            <p>Add </p>
+            Add
           </button>
         </div>
 
         {sections.length <= 0 ? (
           <div>
-            <img src={shopping} alt="shopping" />
+            <img src={shopping} alt="No plans" />
           </div>
         ) : (
           sections.map((section) => (
@@ -209,7 +251,7 @@ function Plans() {
             >
               <div className="flex justify-between items-center mb-4">
                 <div className="text-2xl font-semibold flex items-center">
-                  <img src={list} alt="list " className="w-15" />
+                  <img src={list} alt="List" className="w-8 h-8" />
                   {section.title}
                 </div>
 
@@ -219,89 +261,69 @@ function Plans() {
                     className="text-gray-500 hover:underline"
                   >
                     {section.isClosed ? (
-                      <FaArrowUp className="w-6" />
+                      <FaArrowUp className="text-gray-600" />
                     ) : (
-                      <FaArrowDown className="w-6" />
+                      <FaArrowDown className="text-gray-600" />
                     )}
                   </button>
                   <button
-                    onClick={() => setEditing(section._id)}
-                    className="text-blue-500 hover:underline"
-                  >
-                    <FaPlus className="w-6 cursor-pointer" />
-                  </button>
-                  <button
                     onClick={() => deleteSection(section._id)}
-                    className="text-blue-500 hover:underline"
+                    className="text-red-500 hover:text-red-700"
                   >
-                    <img
-                      src={trash}
-                      alt="trash"
-                      className="w-6 cursor-pointer"
-                    />
+                    <FaTrashAlt />
                   </button>
                 </div>
               </div>
 
-              {editing === section._id && (
-                <div className="mb-4">
-                  <input
-                    type="text"
-                    value={newTask}
-                    onChange={(e) => setNewTask(e.target.value)}
-                    placeholder="New task..."
-                    className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <div className="flex space-x-4 mt-2">
+              {!section.isClosed && (
+                <>
+                  <div className="flex mb-4 space-x-2">
+                    <input
+                      type="text"
+                      value={newTask}
+                      onChange={(e) => setNewTask(e.target.value)}
+                      placeholder="New Task"
+                      className="p-2 rounded-lg border border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                    />
                     <button
                       onClick={() => addTask(section._id)}
-                      className="py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                      className="py-2 px-5 bg-blue-500 text-white rounded-lg cursor-pointer"
                     >
-                      Add
-                    </button>
-                    <button
-                      onClick={() => setEditing(null)}
-                      className="py-2 px-4 bg-gray-400 text-white rounded-lg hover:bg-gray-500"
-                    >
-                      Close
+                      Add Task
                     </button>
                   </div>
-                </div>
-              )}
 
-              {section.isClosed && section.tasks.length > 0 && (
-                <div>
                   {section.tasks.map((task) => (
                     <div
                       key={task._id}
-                      className={`flex justify-between items-center p-3 rounded-lg mb-3 ${
-                        task.completed ? "bg-green-100" : "bg-gray-50"
-                      }`}
+                      className="flex justify-between items-center p-4 mb-4 border border-gray-300 rounded-lg"
                     >
-                      <div>{task.task}</div>
-                      <div className="space-x-2">
+                      <div className="flex space-x-2">
+                        <p>{task.task}</p>
+                      </div>
+                      <div className="space-x-2 flex items-center">
                         <button
                           onClick={() =>
                             editTask(
                               section._id,
                               task._id,
-                              prompt("Edit task:", task.task)
+                              prompt("Edit Task:", task.task)
                             )
                           }
-                          className="text-blue-500 hover:underline"
+                          className="text-yellow-500 hover:text-yellow-700"
                         >
-                          <FaEdit className="w-5" />
+                          <FaEdit />
                         </button>
                         <button
                           onClick={() => deleteTask(section._id, task._id)}
-                          className="text-red-500 "
+                          className="text-red-500 hover:text-red-700"
                         >
-                          <FaTrashAlt className="w-5" />
+                          <FaTrashAlt />
                         </button>
                       </div>
                     </div>
                   ))}
-                </div>
+                </>
               )}
             </div>
           ))

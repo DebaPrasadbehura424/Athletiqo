@@ -5,6 +5,7 @@ import { BsFillArrowRightCircleFill } from "react-icons/bs";
 import registerhere from "../images/registers.jpg";
 import axios from "axios";
 import Cookies from "universal-cookie";
+import Swal from "sweetalert2";
 
 const SignUpPage = () => {
   const navigate = useNavigate();
@@ -60,7 +61,9 @@ const SignUpPage = () => {
         confirmButtonText: "Proceed",
       }).then(() => {
         const token = response.data.token;
+        const userId = response.data.user.userId;
         cookies.set("token", token);
+        cookies.set("userId", userId);
         navigate("/progress");
       });
     } catch (error) {

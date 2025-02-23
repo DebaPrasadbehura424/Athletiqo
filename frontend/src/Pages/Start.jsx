@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { gsap } from "gsap";
 import { NavLink } from "react-router-dom";
 import { FaUser, FaUserPlus } from "react-icons/fa";
-import bgHere from "../vedios/ved3.mp4";
+import bgHere from "../vedios/ved5.mp4";
 
 const Start = () => {
   const [circles, setCircles] = useState([]);
@@ -59,8 +59,8 @@ const Start = () => {
       <header className=" relative z-10 w-full">
         <div className="container mx-auto flex justify-between items-center py-4 px-6">
           <div className="flex items-center">
-            <img src="hh.png" alt="Athletiqo logo" className="h-10 w-10" />
-            <span className="ml-2 text-2xl font-bold text-white">
+            {/* <img src="hh.png" alt="Athletiqo logo" className="h-10 w-10" /> */}
+            <span className="ml-2 text-4xl font-bold text-black">
               Athletiqo
             </span>
           </div>
@@ -98,7 +98,7 @@ const Start = () => {
 
       <main className="container mx-auto px-6 py-12 relative z-10 flex items-center justify-center h-[calc(100vh-80px)]">
         <div className="text-center">
-          <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold text-white leading-tight">
+          <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold text-black leading-tight">
             Athletiqo: Your Health, Our Priority
           </h1>
         </div>

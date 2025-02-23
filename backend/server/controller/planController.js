@@ -6,7 +6,6 @@ module.exports.addSections = async (req, res) => {
   const userId = req.params.userId;
 
   try {
-    // Validate the ObjectId for userId
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({ message: "Invalid user ID" });
     }
@@ -23,7 +22,6 @@ module.exports.addSections = async (req, res) => {
     };
 
     userPlan.sections.push(newSection);
-
     await userPlan.save();
 
     res.status(201).json(newSection);
@@ -34,20 +32,19 @@ module.exports.addSections = async (req, res) => {
 };
 
 module.exports.addTask = async (req, res) => {
-  const { sectionId } = req.params;
+  const { userId, sectionId } = req.params;
   const { task, dueDate } = req.body;
 
   try {
-    // Validate the ObjectId for sectionId and userId
     if (
-      !mongoose.Types.ObjectId.isValid(req.params.userId) ||
+      !mongoose.Types.ObjectId.isValid(userId) ||
       !mongoose.Types.ObjectId.isValid(sectionId)
     ) {
       return res.status(400).json({ message: "Invalid section or user ID" });
     }
 
     const plan = await Plan.findOne({
-      user: req.params.userId,
+      user: userId,
       "sections._id": sectionId,
     });
 
@@ -55,11 +52,7 @@ module.exports.addTask = async (req, res) => {
       return res.status(404).json({ message: "Plan or section not found" });
     }
 
-    const section = plan.sections.find((s) => s._id.toString() === sectionId);
-    if (!section) {
-      return res.status(404).json({ message: "Section not found" });
-    }
-
+    const section = plan.sections.id(sectionId);
     const newTask = {
       task: task,
       completed: false,
@@ -77,33 +70,32 @@ module.exports.addTask = async (req, res) => {
 };
 
 module.exports.getAllTask = async (req, res) => {
-  try {
-    const userId = req.params.userId;
+  const userId = req.params.userId;
 
-    // Validate userId
+  try {
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({ message: "Invalid user ID" });
     }
 
-    const tasks = await Plan.find({ user: userId });
-    if (!tasks || tasks.length === 0) {
-      return res.status(404).json({ message: "No tasks found for this user" });
+    const plan = await Plan.findOne({ user: userId }).populate(
+      "sections.tasks"
+    );
+
+    if (!plan) {
+      return res.status(404).json({ message: "No plan found for this user" });
     }
-    return res.status(200).json(tasks);
+
+    res.status(200).json(plan.sections);
   } catch (error) {
     console.error("Error fetching tasks:", error);
-    return res
-      .status(500)
-      .json({ message: "Server error, please try again later." });
+    res.status(500).json({ message: "Server error, please try again later." });
   }
 };
 
 module.exports.deleteSectionBySectionId = async (req, res) => {
-  const userId = req.params.userId;
-  const sectionId = req.params.sectionId;
+  const { userId, sectionId } = req.params;
 
   try {
-    // Validate userId and sectionId
     if (
       !mongoose.Types.ObjectId.isValid(userId) ||
       !mongoose.Types.ObjectId.isValid(sectionId)
@@ -111,32 +103,34 @@ module.exports.deleteSectionBySectionId = async (req, res) => {
       return res.status(400).json({ message: "Invalid user or section ID" });
     }
 
-    const currentUser = await Plan.findOne({ user: userId });
+    const userPlan = await Plan.findOne({ user: userId });
 
-    if (!currentUser) {
-      return res.status(404).json({ message: "User not found" });
+    if (!userPlan) {
+      return res.status(404).json({ message: "User plan not found" });
     }
 
-    currentUser.sections.pull({ _id: sectionId });
+    const sectionIndex = userPlan.sections.findIndex(
+      (section) => section._id.toString() === sectionId
+    );
 
-    await currentUser.save();
+    if (sectionIndex === -1) {
+      return res.status(404).json({ message: "Section not found" });
+    }
+
+    userPlan.sections.splice(sectionIndex, 1);
+    await userPlan.save();
 
     res.status(200).json({ message: "Section deleted successfully" });
   } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ message: "An error occurred while deleting the section" });
+    console.error("Error deleting section:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
 module.exports.deleteTaskByTaskId = async (req, res) => {
-  const userId = req.params.userId;
-  const sectionId = req.params.sectionId;
-  const taskId = req.params.taskId;
+  const { userId, sectionId, taskId } = req.params;
 
   try {
-    // Validate userId, sectionId, and taskId
     if (
       !mongoose.Types.ObjectId.isValid(userId) ||
       !mongoose.Types.ObjectId.isValid(sectionId) ||
@@ -147,31 +141,63 @@ module.exports.deleteTaskByTaskId = async (req, res) => {
         .json({ message: "Invalid user, section, or task ID" });
     }
 
-    const currentUser = await Plan.findOne({ user: userId });
-    if (!currentUser) {
-      return res.status(404).json({ message: "User not found" });
+    const userPlan = await Plan.findOne({ user: userId });
+
+    if (!userPlan) {
+      return res.status(404).json({ message: "User plan not found" });
     }
 
-    const section = currentUser.sections.id(sectionId);
-    if (!section) {
-      return res.status(404).json({ message: "Section not found" });
-    }
+    const section = userPlan.sections.id(sectionId);
+    const task = section.tasks.id(taskId);
 
-    const taskIndex = section.tasks.findIndex(
-      (task) => task._id.toString() === taskId
-    );
-    if (taskIndex === -1) {
+    if (!task) {
       return res.status(404).json({ message: "Task not found" });
     }
 
-    section.tasks.splice(taskIndex, 1);
-    await currentUser.save();
+    section.tasks.pull(task);
+    await userPlan.save();
 
     res.status(200).json({ message: "Task deleted successfully" });
   } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ message: "An error occurred while deleting the task" });
+    console.error("Error deleting task:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+module.exports.editTask = async (req, res) => {
+  const { userId, sectionId, taskId } = req.params;
+  const { task, dueDate } = req.body;
+
+  try {
+    if (
+      !mongoose.Types.ObjectId.isValid(userId) ||
+      !mongoose.Types.ObjectId.isValid(sectionId) ||
+      !mongoose.Types.ObjectId.isValid(taskId)
+    ) {
+      return res.status(400).json({ message: "Invalid IDs" });
+    }
+
+    const userPlan = await Plan.findOne({ user: userId });
+
+    if (!userPlan) {
+      return res.status(404).json({ message: "User plan not found" });
+    }
+
+    const section = userPlan.sections.id(sectionId);
+    const taskObj = section.tasks.id(taskId);
+
+    if (!taskObj) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    taskObj.task = task || taskObj.task;
+    taskObj.dueDate = dueDate || taskObj.dueDate;
+
+    await userPlan.save();
+
+    res.status(200).json(taskObj);
+  } catch (error) {
+    console.error("Error editing task:", error);
+    res.status(500).json({ message: "Error editing task" });
   }
 };

@@ -14,4 +14,5 @@ router.delete(
   planController.deleteTaskByTaskId
 );
 
+router.put("/:userId/section/:sectionId/task/:taskId", planController.editTask);
 module.exports = router;
