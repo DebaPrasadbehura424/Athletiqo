@@ -10,15 +10,23 @@ import axios from "axios";
 import Cookies from "universal-cookie";
 import shopping from "../images/work-order.png";
 import list from "../images/list.gif";
+import bin from "../images/bin.gif";
 
 function Plans() {
   const cookies = new Cookies();
   const userId = cookies.get("userId");
 
+  // Check for invalid userId and sectionId
+  if (!userId) {
+    alert("Invalid user, please refresh the page.");
+    window.location.reload(); // Refresh the page if userId is not found
+  }
+
   const [sections, setSections] = useState([]);
   const [newSection, setNewSection] = useState("");
   const [newTask, setNewTask] = useState("");
   const [editing, setEditing] = useState(null);
+  const [activeSectionId, setActiveSectionId] = useState(null); // Track which section is active
 
   useEffect(() => {
     axios
@@ -68,7 +76,7 @@ function Plans() {
         section._id === sectionId
           ? {
               ...section,
-              tasks: [...section.tasks, { ...newTaskObject, _id: Date.now() }],
+              tasks: [...section.tasks, { ...newTaskObject, _id: Date.now() }], // Add task locally
             }
           : section
       )
@@ -88,7 +96,7 @@ function Plans() {
                   ...section,
                   tasks: section.tasks.map((task) =>
                     task._id === newTaskObject._id
-                      ? { ...task, _id: response.data._id }
+                      ? { ...task, _id: response.data._id } // Replace with real task id
                       : task
                   ),
                 }
@@ -116,6 +124,13 @@ function Plans() {
     }
   };
 
+  // Toggle task input visibility
+  const toggleTaskInputVisibility = (sectionId) => {
+    setActiveSectionId((prevActiveSectionId) =>
+      prevActiveSectionId === sectionId ? null : sectionId
+    );
+  };
+
   // Delete task
   const deleteTask = async (sectionId, taskId) => {
     setSections((prev) =>
@@ -135,7 +150,6 @@ function Plans() {
       );
     } catch (err) {
       console.error("Error deleting task:", err);
-      // Optionally, you can rollback on error by re-adding the task
     }
   };
 
@@ -154,8 +168,11 @@ function Plans() {
     }
   };
 
-  // Edit task
   const editTask = async (sectionId, taskId, updatedTask) => {
+    await axios.put(
+      `http://localhost:5000/plans/${userId}/section/${sectionId}/task/${taskId}`,
+      { task: updatedTask }
+    );
     setSections((prev) =>
       prev.map((section) =>
         section._id === sectionId
@@ -165,54 +182,6 @@ function Plans() {
                 task._id === taskId ? { ...task, task: updatedTask } : task
               ),
             }
-          : section
-      )
-    );
-
-    try {
-      const response = await axios.put(
-        `http://localhost:5000/plans/${userId}/section/${sectionId}/task/${taskId}`,
-        { task: updatedTask }
-      );
-
-      if (response.status === 200) {
-        setSections((prev) =>
-          prev.map((section) =>
-            section._id === sectionId
-              ? {
-                  ...section,
-                  tasks: section.tasks.map((task) =>
-                    task._id === taskId ? { ...task, task: updatedTask } : task
-                  ),
-                }
-              : section
-          )
-        );
-      }
-    } catch (err) {
-      console.error("Error editing task:", err);
-      // Rollback if update fails
-      setSections((prev) =>
-        prev.map((section) =>
-          section._id === sectionId
-            ? {
-                ...section,
-                tasks: section.tasks.map((task) =>
-                  task._id === taskId ? { ...task, task: task.task } : task
-                ),
-              }
-            : section
-        )
-      );
-    }
-  };
-
-  // Toggle section visibility
-  const toggleSectionVisibility = (sectionId) => {
-    setSections((prev) =>
-      prev.map((section) =>
-        section._id === sectionId
-          ? { ...section, isClosed: !section.isClosed }
           : section
       )
     );
@@ -257,10 +226,10 @@ function Plans() {
 
                 <div className="space-x-2 flex items-center">
                   <button
-                    onClick={() => toggleSectionVisibility(section._id)}
+                    onClick={() => toggleTaskInputVisibility(section._id)}
                     className="text-gray-500 hover:underline"
                   >
-                    {section.isClosed ? (
+                    {activeSectionId === section._id ? (
                       <FaArrowUp className="text-gray-600" />
                     ) : (
                       <FaArrowDown className="text-gray-600" />
@@ -275,7 +244,7 @@ function Plans() {
                 </div>
               </div>
 
-              {!section.isClosed && (
+              {activeSectionId === section._id && (
                 <>
                   <div className="flex mb-4 space-x-2">
                     <input
@@ -318,7 +287,8 @@ function Plans() {
                           onClick={() => deleteTask(section._id, task._id)}
                           className="text-red-500 hover:text-red-700"
                         >
-                          <FaTrashAlt />
+                          {/* <FaTrashAlt /> */}
+                          <img src={bin} alt="bin" className="w-10" />
                         </button>
                       </div>
                     </div>

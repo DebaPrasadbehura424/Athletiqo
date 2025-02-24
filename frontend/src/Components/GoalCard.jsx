@@ -13,24 +13,25 @@ const GoalsCard = () => {
   const navigate = useNavigate(null);
   const cookie = new Cookies();
   const userId = cookie.get("userId");
+  // const [points, setPonits] = useState(0);
 
   const [currentWeight, setCurrentWeight] = useState(
-    userData?.currentWeight || 1
+    userData?.currentWeight || 0
   );
-  const [gainWeight, setGainWeight] = useState(userData?.targetWeight || 1);
-  const [weightPerDay, setWeightPerDay] = useState(1);
+  const [gainWeight, setGainWeight] = useState(userData?.targetWeight || 0);
+  const [weightPerDay, setWeightPerDay] = useState(0);
 
-  const [sleepTime, setSleepTime] = useState(userData?.sleepGoalOneDay || 1);
-  const currentSleepGoal = userData?.sleepGoal || 1;
+  const [sleepTime, setSleepTime] = useState(userData?.sleepGoalOneDay || 0);
+  const currentSleepGoal = userData?.sleepGoal || 0;
 
-  const [glassCount, setGlassCount] = useState(userData?.waterGoalOneDay || 1);
-  const currentGlassGoal = userData?.waterGoal || 1;
+  const [glassCount, setGlassCount] = useState(userData?.waterGoalOneDay || 0);
+  const currentGlassGoal = userData?.waterGoal || 0;
 
-  const [pageCount, setPageCount] = useState(userData?.readingGoalOneDay || 1);
-  const currentPageGoal = userData?.readingGoal || 1;
+  const [pageCount, setPageCount] = useState(userData?.readingGoalOneDay || 0);
+  const currentPageGoal = userData?.readingGoal || 0;
 
-  const [stepCount, setStepCount] = useState(userData?.walkingGoalOneDay || 1);
-  const currentStepGoal = userData?.walkingGoal || 1;
+  const [stepCount, setStepCount] = useState(userData?.walkingGoalOneDay || 0);
+  const currentStepGoal = userData?.walkingGoal || 0;
 
   useEffect(() => {
     if (userData) {
@@ -75,7 +76,25 @@ const GoalsCard = () => {
       Swal.fire({
         icon: "success",
         title: `Today ${goalName} is complete`,
-        text: "Congratulations, you gain 5 points",
+      }).then(async () => {
+        try {
+          await axios.patch(`http://localhost:5000/goals/addPoints/${userId}`, {
+            points: 5,
+          });
+
+          Swal.fire({
+            icon: "success",
+            title: "Points Updated",
+            text: "5 points have been added to your total.",
+          });
+        } catch (error) {
+          console.error("Error adding points:", error);
+          Swal.fire({
+            icon: "error",
+            title: "Oops!",
+            text: "Something went wrong while adding points.",
+          });
+        }
       });
     }
   };

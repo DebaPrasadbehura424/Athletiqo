@@ -10,6 +10,8 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import { GoGoal } from "react-icons/go";
+import Cookies from "universal-cookie";
+import { useNavigate } from "react-router-dom";
 
 import { NavLink } from "react-router-dom";
 import GraphTrack from "./GraphTrack";
@@ -17,6 +19,15 @@ import Growth from "./Growth";
 import GoalsSetter from "./GoalsSetter";
 
 function DashBoard(props) {
+  const cookie = new Cookies();
+  const navigate = useNavigate(null);
+
+  function logoutUser() {
+    cookie.remove("token");
+    cookie.remove("userId");
+    navigate("/");
+  }
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [activeComponent, setActiveComponent] = useState("GraphTrack");
 
@@ -93,7 +104,10 @@ function DashBoard(props) {
         </div>
 
         {/* Logout at the bottom */}
-        <div className="mt-auto flex items-center space-x-2 cursor-pointer hover:bg-blue-600 p-2 rounded-lg">
+        <div
+          className="mt-auto flex items-center space-x-2 cursor-pointer hover:bg-blue-600 p-2 rounded-lg"
+          onClick={logoutUser}
+        >
           <FaSignOutAlt className="text-xl" />
           <span>Logout</span>
         </div>
@@ -158,7 +172,10 @@ function DashBoard(props) {
                     <FaInfoCircle className="inline-block mr-2" />
                     Information
                   </div>
-                  <div className="flex items-center px-4 py-2 text-sm cursor-pointer hover:bg-blue-700 transition duration-300 ease-in-out">
+                  <div
+                    className="flex items-center px-4 py-2 text-sm cursor-pointer hover:bg-blue-700 transition duration-300 ease-in-out"
+                    onClick={logoutUser}
+                  >
                     <FaSignOutAlt className="inline-block mr-2" />
                     Logout
                   </div>

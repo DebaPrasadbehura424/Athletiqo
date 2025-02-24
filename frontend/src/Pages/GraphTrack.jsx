@@ -1,20 +1,20 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Chart as ChartJS } from "chart.js/auto";
 import { useState } from "react";
 import { Bar, Doughnut, Line } from "react-chartjs-2";
 import { useParams } from "react-router-dom";
-
+import { userContextData } from "../context/UserContext";
 function GraphTrack(props) {
+  const { userData } = useContext(userContextData);
   const { slot } = useParams();
+  const arrays = userData.dailyPoints;
+
   const lineData = {
     labels: Array.from({ length: 30 }, (_, i) => (i + 1).toString()),
     datasets: [
       {
         label: `Monthly data of sleep${slot}`,
-        data: [
-          5, 9, 8, 8, 6, 5, 0, 4, 7, 10, 11, 12, 9, 8, 6, 7, 5, 10, 11, 12, 8,
-          4, 3, 6, 5, 7, 9, 8, 10, 11,
-        ],
+        data: arrays,
         borderColor: "rgba(75, 192, 192, 1)",
         backgroundColor: "rgba(75, 192, 192, 0.2)",
         tension: 0.1,
@@ -35,7 +35,7 @@ function GraphTrack(props) {
     datasets: [
       {
         label: `${slot}`,
-        data: [3, 9, 2, 6, 8, 2, 8],
+        data: arrays,
         backgroundColor: [
           "rgba(255, 99, 132, 0.2)",
           "rgba(54, 162, 235, 0.2)",
@@ -71,7 +71,7 @@ function GraphTrack(props) {
     ],
     datasets: [
       {
-        data: [3, 9, 2, 6, 8, 2, 8],
+        data: arrays,
         backgroundColor: [
           "#FF6384",
           "#36A2EB",

@@ -8,7 +8,6 @@ function GoalsSetter() {
   const { userData, setUserData } = useContext(userContextData);
   const cookies = new Cookies();
   const userId = cookies.get("userId");
-  console.log(userData);
 
   const [currentWeight, setCurrentWeight] = useState(
     userData?.currentWeight || ""

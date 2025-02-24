@@ -69,3 +69,23 @@ module.exports.incrementGoalProgress = async (req, res) => {
       .json({ message: "Server error", error: error.message });
   }
 };
+
+module.exports.addAllponits = async (req, res) => {
+  const { points } = req.body;
+  const { userId } = req.params;
+
+  try {
+    const userGoal = await goalModel.findOne({ user: userId });
+    if (!userGoal) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    userGoal.addDailyPoint(points);
+    
+
+    res.status(200).json({ message: "Points added successfully", userGoal });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};

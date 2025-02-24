@@ -45,17 +45,14 @@ const goalSchema = new mongoose.Schema({
     type: [Number],
     default: [0, 0, 0, 0, 0, 0, 0],
   },
-
   currentDay: {
     type: Date,
     default: Date.now,
   },
-
   sleepGoalOneDay: {
     type: Number,
     default: 0,
   },
-
   readingGoalOneDay: {
     type: Number,
     default: 0,
@@ -77,12 +74,10 @@ goalSchema.methods.resetGoalsIfDayChanged = function () {
   const currentDate = new Date();
   const currentDateString = currentDate.toISOString().split("T")[0];
   const currentDayString = this.currentDay.toISOString().split("T")[0];
-
   if (currentDateString !== currentDayString) {
     if (this.dailyPoints.length >= 7) {
       this.dailyPoints.shift();
     }
-
     this.dailyPoints.push(this.todayPoints);
     // this.totalPoints += this.todayPoints;
     this.todayPoints = 0;
@@ -91,12 +86,10 @@ goalSchema.methods.resetGoalsIfDayChanged = function () {
     this.waterGoalOneDay = 0;
     this.walkingGoalOneDay = 0;
     this.currentDay = currentDate;
-
     return this.save();
   }
   return Promise.resolve(this);
 };
-
 goalSchema.methods.addDailyPoint = function (newPoint) {
   this.todayPoints += newPoint;
   this.totalPoints += newPoint;

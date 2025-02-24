@@ -42,7 +42,8 @@ const SignUpPage = () => {
         confirmButtonText: "Proceed",
       }).then(() => {
         const token = response.data.token;
-        const userId = response.data.user.userId;
+        const userId = response.data.user.id;
+
         cookies.set("token", token);
         cookies.set("userId", userId);
         navigate("/progress");
@@ -82,14 +83,6 @@ const SignUpPage = () => {
 
         <div className="flex items-center justify-center px-4 py-10 bg-white sm:px-6 lg:px-8 sm:py-16 lg:py-24">
           <div className="xl:w-full xl:max-w-sm 2xl:max-w-md xl:mx-auto">
-            <h2 className="text-3xl font-bold leading-tight text-black sm:text-4xl">
-              {currentStep === 1
-                ? "Sign up to start your wellness journey"
-                : currentStep === 2
-                ? "Set your fitness goals"
-                : "Review and submit"}
-            </h2>
-
             <form onSubmit={handleSubmit} className="mt-8 p-4">
               <div className="space-y-5">
                 <div>

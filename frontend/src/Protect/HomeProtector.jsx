@@ -6,10 +6,10 @@ function HomeProtector({ children }) {
 
   const cookies = new Cookies();
   const token = cookies.get("token");
-  console.log(token);
+  const userId = cookies.get("userId");
 
   useEffect(() => {
-    if (token != null) {
+    if (token != null && userId != null) {
       naviagate("/progress");
     }
   }, []);

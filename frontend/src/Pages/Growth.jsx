@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { userContextData } from "../context/UserContext";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 function Growth() {
+  const { userData } = useContext(userContextData);
   const totalPoints = 600;
-  const currentPoints = 350;
+
+  const currentPoints = userData?.totalPoints || 1;
   const currentGrowth = (currentPoints / totalPoints) * 100;
 
   const [growth, setGrowth] = useState(0);

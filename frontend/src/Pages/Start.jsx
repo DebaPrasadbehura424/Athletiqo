@@ -17,7 +17,7 @@ const Start = () => {
         const xPos = Math.random() * window.innerWidth;
         const yPos = Math.random() * window.innerHeight;
         const animationDelay = Math.random() * 2;
-        const circle = { 
+        const circle = {
           size,
           xPos,
           yPos,

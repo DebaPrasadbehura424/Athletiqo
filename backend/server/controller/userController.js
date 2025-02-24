@@ -95,20 +95,25 @@ module.exports.LoginUser = async (req, res) => {
     if (!user) {
       return res.status(400).json({ message: "User not found!" });
     }
-
     const isValidPassword = await user.comparePassword(password);
-
     if (!isValidPassword) {
       return res.status(400).json({ message: "Incorrect password!" });
     }
-
     const token = jwt.sign(
       { userId: user._id, email: user.email },
       "NeuranovaAthlenticoanuragdebakarankamanaanshikaweareteams@!IAMDEV",
       { expiresIn: "24h" }
     );
-
-    return res.status(200).json({ token, user });
+    const userGoal = await Goal.findOne({ user: user._id });
+    if (!userGoal) {
+      return res.status(404).json({ message: "Goal data not found!" });
+    }
+    await userGoal.resetGoalsIfDayChanged();
+    return res.status(200).json({
+      token,
+      user,
+      goal: userGoal,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "There was an error during login" });
