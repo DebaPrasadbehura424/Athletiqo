@@ -4,6 +4,7 @@ const goalSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
+    required: true,
   },
   currentWeight: {
     type: Number,
@@ -57,55 +58,48 @@ const goalSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-
   waterGoalOneDay: {
     type: Number,
     default: 0,
   },
-
   walkingGoalOneDay: {
     type: Number,
     default: 0,
   },
 });
 
-// Reset goals if day has changed
 goalSchema.methods.resetGoalsIfDayChanged = function () {
   const currentDate = new Date();
-  const currentDateString = currentDate.toISOString().split("T")[0];
-  const currentDayString = this.currentDay.toISOString().split("T")[0];
-  if (currentDateString !== currentDayString) {
+
+  const currentDay = new Date(this.currentDay);
+
+  if (currentDate.getTime() !== currentDay.getTime()) {
     if (this.dailyPoints.length >= 7) {
       this.dailyPoints.shift();
     }
+
     this.dailyPoints.push(this.todayPoints);
-    // this.totalPoints += this.todayPoints;
+
     this.todayPoints = 0;
     this.sleepGoalOneDay = 0;
     this.readingGoalOneDay = 0;
     this.waterGoalOneDay = 0;
     this.walkingGoalOneDay = 0;
+
     this.currentDay = currentDate;
+
     return this.save();
   }
+
   return Promise.resolve(this);
 };
+
 goalSchema.methods.addDailyPoint = function (newPoint) {
   this.todayPoints += newPoint;
   this.totalPoints += newPoint;
+
   return this.save();
 };
-
-
-
-
-
-
-
-
-
-
-
 
 goalSchema.methods.incrementGoalProgress = function (goalType, amount) {
   if (goalType === "sleepGoalOneDay") {

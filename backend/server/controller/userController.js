@@ -99,16 +99,20 @@ module.exports.LoginUser = async (req, res) => {
     if (!isValidPassword) {
       return res.status(400).json({ message: "Incorrect password!" });
     }
+
     const token = jwt.sign(
       { userId: user._id, email: user.email },
       "NeuranovaAthlenticoanuragdebakarankamanaanshikaweareteams@!IAMDEV",
       { expiresIn: "24h" }
     );
+
     const userGoal = await Goal.findOne({ user: user._id });
     if (!userGoal) {
       return res.status(404).json({ message: "Goal data not found!" });
     }
+
     await userGoal.resetGoalsIfDayChanged();
+
     return res.status(200).json({
       token,
       user,
