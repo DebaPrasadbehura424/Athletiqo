@@ -7,11 +7,14 @@ import {
   FaSignOutAlt,
   FaTachometerAlt,
   FaFire,
-  FaTimes,  // Import the cross icon
+  FaTimes,
 } from "react-icons/fa";
+import { GoGoal } from "react-icons/go";
+
 import { NavLink } from "react-router-dom";
 import GraphTrack from "./GraphTrack";
 import Growth from "./Growth";
+import GoalsSetter from "./GoalsSetter";
 
 function DashBoard(props) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -23,13 +26,13 @@ function DashBoard(props) {
 
   const handleComponentChange = (component) => {
     setActiveComponent(component);
-    setIsDropdownOpen(false); // Close dropdown after selecting an option
+    setIsDropdownOpen(false);
   };
 
   return (
     <div className="flex h-screen bg-gray-100 text-gray-800">
       <div className="w-1/5 bg-blue-500 p-6 text-white flex-col space-y-6 hidden md:flex">
-        <div className="text-3xl font-bold text-center">FitYatra</div>
+        <div className="text-3xl font-bold text-center">Athletiqo</div>
         <div className="space-y-4">
           <div className="flex flex-col space-y-3">
             <div
@@ -40,7 +43,6 @@ function DashBoard(props) {
               <span>Profile</span>
             </div>
 
-            {/* Growth (No link) */}
             <div
               className="flex items-center space-x-3 cursor-pointer hover:bg-blue-600 p-2 rounded-lg"
               onClick={() => handleComponentChange("Growth")}
@@ -49,11 +51,20 @@ function DashBoard(props) {
               <p>Growth</p>
             </div>
 
-            {/* Progress - NavLink */}
+            <div
+              className="flex items-center space-x-3 cursor-pointer hover:bg-blue-600 p-2 rounded-lg"
+              onClick={() => handleComponentChange("Goals")}
+            >
+              <GoGoal className="text-xl" />
+              <p>Goals Settings</p>
+            </div>
+
             <NavLink
               to="/progress"
               className={({ isActive }) =>
-                isActive ? "flex items-center space-x-3 cursor-pointer hover:bg-blue-600 p-2 rounded-lg bg-blue-700" : "flex items-center space-x-3 cursor-pointer hover:bg-blue-600 p-2 rounded-lg"
+                isActive
+                  ? "flex items-center space-x-3 cursor-pointer hover:bg-blue-600 p-2 rounded-lg bg-blue-700"
+                  : "flex items-center space-x-3 cursor-pointer hover:bg-blue-600 p-2 rounded-lg"
               }
             >
               <FaTachometerAlt className="text-xl" />
@@ -64,7 +75,9 @@ function DashBoard(props) {
             <NavLink
               to="/leaderboard"
               className={({ isActive }) =>
-                isActive ? "flex items-center space-x-3 cursor-pointer hover:bg-blue-600 p-2 rounded-lg bg-blue-700" : "flex items-center space-x-3 cursor-pointer hover:bg-blue-600 p-2 rounded-lg"
+                isActive
+                  ? "flex items-center space-x-3 cursor-pointer hover:bg-blue-600 p-2 rounded-lg bg-blue-700"
+                  : "flex items-center space-x-3 cursor-pointer hover:bg-blue-600 p-2 rounded-lg"
               }
             >
               <FaFire className="text-xl" />
@@ -112,10 +125,19 @@ function DashBoard(props) {
                     <FaChartLine className="inline-block mr-2" />
                     Growth
                   </div>
+                  <div
+                    className="flex items-center px-4 py-2 text-sm cursor-pointer hover:bg-blue-700 transition duration-300 ease-in-out"
+                    onClick={() => handleComponentChange("Goals")}
+                  >
+                    <GoGoal className="inline-block mr-2" />
+                    Goals settings
+                  </div>
                   <NavLink
                     to="/progress"
                     className={({ isActive }) =>
-                      isActive ? "flex items-center px-4 py-2 text-sm cursor-pointer hover:bg-blue-700 bg-blue-700 transition duration-300 ease-in-out" : "flex items-center px-4 py-2 text-sm cursor-pointer hover:bg-blue-700 transition duration-300 ease-in-out"
+                      isActive
+                        ? "flex items-center px-4 py-2 text-sm cursor-pointer hover:bg-blue-700 bg-blue-700 transition duration-300 ease-in-out"
+                        : "flex items-center px-4 py-2 text-sm cursor-pointer hover:bg-blue-700 transition duration-300 ease-in-out"
                     }
                   >
                     <FaTachometerAlt className="inline-block mr-2" />
@@ -124,7 +146,9 @@ function DashBoard(props) {
                   <NavLink
                     to="/leaderboard"
                     className={({ isActive }) =>
-                      isActive ? "flex items-center px-4 py-2 text-sm cursor-pointer hover:bg-blue-700 bg-blue-700 transition duration-300 ease-in-out" : "flex items-center px-4 py-2 text-sm cursor-pointer hover:bg-blue-700 transition duration-300 ease-in-out"
+                      isActive
+                        ? "flex items-center px-4 py-2 text-sm cursor-pointer hover:bg-blue-700 bg-blue-700 transition duration-300 ease-in-out"
+                        : "flex items-center px-4 py-2 text-sm cursor-pointer hover:bg-blue-700 transition duration-300 ease-in-out"
                     }
                   >
                     <FaFire className="inline-block mr-2" />
@@ -155,6 +179,7 @@ function DashBoard(props) {
         <div className="w-full h-80">
           {activeComponent === "GraphTrack" && <GraphTrack />}
           {activeComponent === "Growth" && <Growth />}
+          {activeComponent === "Goals" && <GoalsSetter />}
         </div>
       </div>
     </div>

@@ -10,7 +10,7 @@ function TrackCal(props) {
 
   const { userData } = useContext(userContextData);
 
-  const age = userData?.user?.age || 0;
+  const age = userData?.age || 0;
 
   const [mealCalories, setMealCalories] = useState({
     breakfast: { calory: 0, isCompltere: false },

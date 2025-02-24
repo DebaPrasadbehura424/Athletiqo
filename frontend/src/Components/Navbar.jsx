@@ -10,7 +10,12 @@ function Navbar() {
   const cookie = new Cookie();
   const token = cookie.get("token");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const options = ["Progress", "LeaderBoard", "Plans", "MarketPlace"];
+  const options = [
+    "Progress",
+    "LeaderBoard",
+    "Plans",
+    //  "MarketPlace"
+  ];
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);

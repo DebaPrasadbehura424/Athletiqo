@@ -2,22 +2,10 @@ const bcrypt = require("bcryptjs");
 const userModel = require("../model/userModel");
 const jwt = require("jsonwebtoken");
 const Plan = require("../model/PlansModel");
+const Goal = require("../model/GoalModel");
 
 module.exports.RegisterUser = async (req, res) => {
-  const {
-    firstName,
-    email,
-    password,
-    confirmPassword,
-    age,
-    currentWeight,
-    targetWeight,
-    sleepGoal,
-    readingGoal,
-    waterGoal,
-    isWorkingPerson,
-    hasHeartIssue,
-  } = req.body;
+  const { firstName, email, password, confirmPassword } = req.body;
 
   try {
     const isUserExist = await userModel.findOne({ email });
@@ -41,27 +29,42 @@ module.exports.RegisterUser = async (req, res) => {
     });
     const saveNewPlan = await Plans.save();
 
+    const Goals = new Goal({
+      user: null,
+      currentWeight: 0,
+      targetWeight: 0,
+      sleepGoal: 0,
+      readingGoal: 0,
+      waterGoal: 0,
+      age: 18,
+      walkingGoal: 0,
+      totalPoints: 0,
+      dailyPoints: [0, 0, 0, 0, 0, 0],
+      twentyFiveDaysPoints: [],
+      sleepGoalOneDay: 0,
+      readingGoalOneDay: 0,
+      walkingGoalOneDay: 0,
+      waterGoalOneDay: 0,
+      currentDay: Date.now(),
+    });
+    const saveNewGoal = await Goals.save();
+
     const newUser = new userModel({
       firstName,
       email,
       password: hashedPassword,
       confirmPassword: hashedPassword,
-      age,
-      currentWeight,
-      targetWeight,
-      sleepGoal,
-      readingGoal,
-      waterGoal,
-      isWorkingPerson,
-      hasHeartIssue,
+      goalsdetails: saveNewGoal._id,
       planList: saveNewPlan._id,
     });
 
     const savedUser = await newUser.save();
 
     saveNewPlan.user = savedUser._id;
+    saveNewGoal.user = savedUser._id;
 
     await saveNewPlan.save();
+    await saveNewGoal.save();
 
     const token = jwt.sign(
       { userId: savedUser._id, email: savedUser.email },
@@ -76,14 +79,6 @@ module.exports.RegisterUser = async (req, res) => {
         id: savedUser._id,
         firstName: savedUser.firstName,
         email: savedUser.email,
-        age: savedUser.age,
-        currentWeight: savedUser.currentWeight,
-        targetWeight: savedUser.targetWeight,
-        sleepGoal: savedUser.sleepGoal,
-        readingGoal: savedUser.readingGoal,
-        waterGoal: savedUser.waterGoal,
-        isWorkingPerson: savedUser.isWorkingPerson,
-        hasHeartIssue: savedUser.hasHeartIssue,
       },
     });
   } catch (err) {
@@ -134,15 +129,6 @@ module.exports.profileUser = async (req, res) => {
         id: user._id,
         firstName: user.firstName,
         email: user.email,
-        age: user.age,
-        currentWeight: user.currentWeight,
-        targetWeight: user.targetWeight,
-        sleepGoal: user.sleepGoal,
-        readingGoal: user.readingGoal,
-        waterGoal: user.waterGoal,
-        isWorkingPerson: user.isWorkingPerson,
-        hasHeartIssue: user.hasHeartIssue,
-        activityData: user.activityData,
       },
     });
   } catch (err) {

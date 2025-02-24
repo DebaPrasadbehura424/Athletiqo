@@ -1,102 +1,96 @@
 import React from "react";
-import { FaCrown, FaMedal, FaStar } from "react-icons/fa";
-import { IoMdPerson } from "react-icons/io";
+import { FaTrophy, FaMedal, FaShieldAlt } from "react-icons/fa"; // Importing icons for top 3 ranks
 import Navbar from "../Components/Navbar";
 
-const LeaderBoard = () => {
-  const leaders = [
-    {
-      rank: 1,
-      name: "John Doe",
-      points: 1200,
-      profilePic: "https://randomuser.me/api/portraits/men/1.jpg",
-    },
-    {
-      rank: 2,
-      name: "Jane Smith",
-      points: 1100,
-      profilePic: "https://randomuser.me/api/portraits/women/2.jpg",
-    },
-    {
-      rank: 3,
-      name: "Alex Brown",
-      points: 1000,
-      profilePic: "https://randomuser.me/api/portraits/men/3.jpg",
-    },
-    {
-      rank: 4,
-      name: "Maria Garcia",
-      points: 950,
-      profilePic: "https://randomuser.me/api/portraits/women/4.jpg",
-    },
-    {
-      rank: 5,
-      name: "David Lee",
-      points: 900,
-      profilePic: "https://randomuser.me/api/portraits/men/5.jpg",
-    },
-  ];
+// Random names and points
+const names = [
+  "Alice",
+  "Bob",
+  "Charlie",
+  "David",
+  "Eve",
+  "Frank",
+  "Grace",
+  "Hannah",
+  "Ivy",
+  "Jack",
+];
+
+const getRandomPoints = () => Math.floor(Math.random() * 1000) + 1;
+
+const Leaderboard = () => {
+  // Create 10 random leaderboard entries
+  const leaderboardData = names.map((name, index) => ({
+    rank: index + 1,
+    profile: `https://randomuser.me/api/portraits/men/${index + 10}.jpg`, // Random image for profile
+    name,
+    points: getRandomPoints(),
+  }));
 
   return (
-    <>
+    <div className="container mx-auto p-6">
       <Navbar />
-      <div className="p-6 md:p-12 bg-gradient-to-br from-blue-800 to-blue-400 min-h-screen">
-        <h1 className="text-3xl font-bold text-center mb-8 text-white tracking-wide">
-          Leadership Board
-        </h1>
 
-        {/* Leaderboard Grid */}
-        <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {leaders.map((leader) => (
-            <div
-              key={leader.rank}
-              className={`bg-white rounded-lg shadow-md p-4 flex flex-col items-center text-center transition-transform transform hover:scale-105 duration-300 ease-in-out ${
-                leader.rank === 1
-                  ? "border-4 border-yellow-400"
-                  : leader.rank === 2
-                  ? "border-4 border-gray-400"
-                  : "border-4 border-blue-500"
-              }`}
-            >
-              {/* Profile Image */}
-              <img
-                src={leader.profilePic}
-                alt={`${leader.name}'s profile`}
-                className="w-16 h-16 rounded-full object-cover mb-4 border-4 border-white shadow-md"
-              />
-
-              {/* Leader Info */}
-              <div className="text-lg font-semibold text-gray-800">
-                {leader.name}
-              </div>
-              <div className="text-base text-gray-600 mt-1">
-                {leader.points} points
-              </div>
-
-              {/* Rank Icon */}
-              <div className="mt-4">
-                {leader.rank === 1 && (
-                  <FaCrown className="text-yellow-400 text-3xl mx-auto" />
-                )}
-                {leader.rank === 2 && (
-                  <FaMedal className="text-gray-300 text-3xl mx-auto" />
-                )}
-                {leader.rank === 3 && (
-                  <FaStar className="text-blue-300 text-3xl mx-auto" />
-                )}
-                {leader.rank > 3 && (
-                  <IoMdPerson className="text-gray-500 text-3xl mx-auto" />
-                )}
-                <div className="mt-2 text-xl font-bold text-gray-800">
-                  #{leader.rank}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+      <div className="overflow-x-auto mt-6">
+        <table className="min-w-full table-auto bg-white text-black">
+          <thead>
+            <tr className="bg-gray-200">
+              <th className="px-6 py-4 text-left">Rank</th>
+              <th className="px-6 py-4 text-left">Profile</th>
+              <th className="px-6 py-4 text-left">Name</th>
+              <th className="px-6 py-4 text-left">Points</th>
+            </tr>
+          </thead>
+          <tbody>
+            {leaderboardData.sort().map((entry, index) => (
+              <tr
+                key={entry.rank}
+                className={
+                  index === 0
+                    ? "bg-blue-500 text-white"
+                    : index === 1
+                    ? "bg-green-500 text-white"
+                    : index === 2
+                    ? "bg-yellow-500 text-white"
+                    : index % 5 === 0
+                    ? "bg-pink-500 text-white"
+                    : index % 5 === 1
+                    ? "bg-purple-500 text-white"
+                    : index % 5 === 2
+                    ? "bg-teal-500 text-white"
+                    : index % 5 === 3
+                    ? "bg-indigo-500 text-white"
+                    : "bg-red-500 text-white"
+                }
+              >
+                <td className="px-6 py-6">{entry.rank}</td>
+                <td className="px-6 py-6">
+                  <img
+                    src={entry.profile}
+                    alt={entry.name}
+                    className="w-12 h-12 rounded-full"
+                  />
+                </td>
+                <td className="px-6 py-6 font-semibold">
+                  {entry.rank === 1 && (
+                    <FaTrophy className="inline text-yellow-500 mr-2" />
+                  )}
+                  {entry.rank === 2 && (
+                    <FaMedal className="inline text-gray-500 mr-2" />
+                  )}
+                  {entry.rank === 3 && (
+                    <FaShieldAlt className="inline text-amber-700 mr-2" />
+                  )}
+                  {entry.name}
+                </td>
+                <td className="px-6 py-6">{entry.points}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
-    </>
+    </div>
   );
 };
 
-export default LeaderBoard;
+export default Leaderboard;

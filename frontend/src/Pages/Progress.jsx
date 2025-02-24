@@ -10,6 +10,7 @@ import { userContextData } from "../context/UserContext";
 function Progress(props) {
   const cookies = new Cookies();
   const token = cookies.get("token");
+  const userId = cookies.get("userId");
 
   const { userData, setUserData } = useContext(userContextData);
 
@@ -17,11 +18,7 @@ function Progress(props) {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/user/profileUser", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      .get(`http://localhost:5000/goals/getUserdetails/${userId}`)
       .then((response) => {
         if (response.status === 200) {
           setUserData(response.data);
@@ -33,7 +30,7 @@ function Progress(props) {
       .finally(() => {
         setIsLoading(false);
       });
-  }, [token]);
+  }, [userId]);
 
   if (isLoading) {
     return (

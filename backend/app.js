@@ -8,6 +8,7 @@ const app = express();
 // Routes
 const userRoutes = require("./server/routes/userRoutes");
 const planRoutes = require("./server/routes/plansRoute");
+const goalRoutes = require("./server/routes/goalRoute");
 
 dotenv.config();
 connectDB();
@@ -25,5 +26,6 @@ app.get("/", (req, res) => {
 // API Routes
 app.use("/user", userRoutes);
 app.use("/plans", planRoutes);
+app.use("/goals", goalRoutes);
 
 module.exports = app;
