@@ -16,44 +16,7 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
-  confirmPassword: {
-    type: String,
-    required: true,
-  },
-  // currentWeight: {
-  //   type: Number,
-  //   required: true,
-  // },
-  // targetWeight: {
-  //   type: Number,
-  //   required: true,
-  // },
-  // sleepGoal: {
-  //   type: Number,
-  //   required: true,
-  // },
-  // readingGoal: {
-  //   type: Number,
-  //   required: true,
-  // },
-  // waterGoal: {
-  //   type: Number,
-  //   required: true,
-  // },
-  // age: {
-  //   type: Number,
-  //   required: true,
-  // },
-  // isWorkingPerson: {
-  //   type: Boolean,
-  // },
-  // hasHeartIssue: {
-  //   type: Boolean,
-  // },
-  // currentDay: {
-  //   type: Date,
-  //   default: Date.now,
-  // },
+
   goaldetails: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Goal",

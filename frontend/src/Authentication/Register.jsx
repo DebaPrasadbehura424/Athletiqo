@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AiOutlineUser, AiOutlineMail, AiOutlineLock } from "react-icons/ai";
-import { BsFillArrowRightCircleFill } from "react-icons/bs";
 import registerhere from "../images/registers.jpg";
 import axios from "axios";
 import Cookies from "universal-cookie";
@@ -16,7 +15,6 @@ const SignUpPage = () => {
     firstName: "",
     email: "",
     password: "",
-    confirmPassword: "",
   });
 
   const handleChange = (e) => {
@@ -42,7 +40,9 @@ const SignUpPage = () => {
         confirmButtonText: "Proceed",
       }).then(() => {
         const token = response.data.token;
-        const userId = response.data.user.id;
+        const userId = response.data.userId
+          ? response.data.userId.toString()
+          : null;
 
         cookies.set("token", token);
         cookies.set("userId", userId);
@@ -136,22 +136,6 @@ const SignUpPage = () => {
                   </div>
                 </div>
 
-                <div>
-                  <label className="text-base font-medium text-gray-900">
-                    Confirm Password
-                  </label>
-                  <div className="mt-2.5 relative text-gray-400 focus-within:text-gray-600">
-                    <AiOutlineLock className="absolute inset-y-0 left-0 flex items-center pl-3" />
-                    <input
-                      type="password"
-                      name="confirmPassword"
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                      placeholder="Confirm your password"
-                      className="block w-full py-4 pl-10 pr-4 text-black placeholder-gray-500 border border-gray-200 rounded-md bg-gray-50 focus:outline-none"
-                    />
-                  </div>
-                </div>
                 <button
                   type="submit"
                   className="w-25 py-3 text-center text-white bg-green-600 rounded-md hover:bg-green-700"

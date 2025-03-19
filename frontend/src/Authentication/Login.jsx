@@ -48,7 +48,9 @@ const Login = () => {
           text: "Welcome back to your account.",
         }).then(() => {
           const token = response.data.token;
-          const userId = response.data.user._id;
+          const userId = response.data.user.id
+            ? response.data.user.id.toString()
+            : null;
           cookies.set("token", token);
           cookies.set("userId", userId);
           navigate("/progress");

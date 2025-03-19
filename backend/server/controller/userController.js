@@ -5,17 +5,13 @@ const Plan = require("../model/PlansModel");
 const Goal = require("../model/GoalModel");
 
 module.exports.RegisterUser = async (req, res) => {
-  const { firstName, email, password, confirmPassword } = req.body;
+  const { firstName, email, password } = req.body;
 
   try {
     const isUserExist = await userModel.findOne({ email });
 
     if (isUserExist) {
       return res.status(400).json({ message: "User already exists!" });
-    }
-
-    if (password !== confirmPassword) {
-      return res.status(400).json({ message: "Passwords do not match!" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -53,7 +49,6 @@ module.exports.RegisterUser = async (req, res) => {
       firstName,
       email,
       password: hashedPassword,
-      confirmPassword: hashedPassword,
       goalsdetails: saveNewGoal._id,
       planList: saveNewPlan._id,
     });
