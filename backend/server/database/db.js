@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 function connectDB(req, res) {
-  const URI = "mongodb://127.0.0.1:27017/Fityatra";
+  const URI =
+    "mongodb+srv://debaprasadbehura89:SrOPEXkCoTHEx1Fc@cluster0.9chhe.mongodb.net/Namaste?retryWrites=true&w=majority&appName=Cluster0";
   mongoose
     .connect(URI)
     .then(() => {
