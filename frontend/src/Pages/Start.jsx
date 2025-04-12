@@ -59,7 +59,6 @@ const Start = () => {
       <header className=" relative z-10 w-full">
         <div className="container mx-auto flex justify-between items-center py-4 px-6">
           <div className="flex items-center">
-            {/* <img src="hh.png" alt="Athletiqo logo" className="h-10 w-10" /> */}
             <span className="ml-2 text-4xl font-bold text-black">
               Athletiqo
             </span>

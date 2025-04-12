@@ -10,7 +10,7 @@ import DashBoard from "./Pages/DashBoard";
 import Start from "./Pages/Start";
 import HomeProtector from "./Protect/HomeProtector";
 import Login from "./Authentication/Login";
-// https://gifer.com/en/gifs/exercise
+import Marketplace from "./Pages/MarketPlace";
 function App() {
   return (
     <Routes>
@@ -30,6 +30,7 @@ function App() {
       <Route path="/Leaderboard" element={<Leadership />} />
       <Route path="/yogaexcer/:slot" element={<YogaExcercise />} />
       <Route path="/dashboard" element={<DashBoard />} />
+      <Route path="/marketplace" element={<Marketplace />} />
 
       <Route path="/register" element={<Register />} />
       <Route path="/login" element={<Login />} />
@@ -38,3 +39,5 @@ function App() {
 }
 
 export default App;
+
+// https://gifer.com/en/gifs/exercise

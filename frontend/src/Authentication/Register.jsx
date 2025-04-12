@@ -3,13 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { AiOutlineUser, AiOutlineMail, AiOutlineLock } from "react-icons/ai";
 import registerhere from "../images/registers.jpg";
 import axios from "axios";
-import Cookies from "universal-cookie";
 import Swal from "sweetalert2";
 
 const SignUpPage = () => {
   const navigate = useNavigate();
-
-  const cookies = new Cookies();
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -40,12 +37,14 @@ const SignUpPage = () => {
         confirmButtonText: "Proceed",
       }).then(() => {
         const token = response.data.token;
-        const userId = response.data.userId
-          ? response.data.userId.toString()
-          : null;
-
-        cookies.set("token", token);
-        cookies.set("userId", userId);
+        const userId = response.data.id;
+        const goalId = response.data.goalId;
+        const planId = response.data.planId;
+        sessionStorage.setItem("token", token);
+        sessionStorage.setItem("userId", userId);
+        sessionStorage.setItem("goalId", goalId);
+        sessionStorage.setItem("planId", planId);
+        localStorage.setItem("token", token);
         navigate("/progress");
       });
     } catch (error) {

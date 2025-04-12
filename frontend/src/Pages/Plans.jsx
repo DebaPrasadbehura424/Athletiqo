@@ -7,30 +7,23 @@ import {
   FaArrowDown,
 } from "react-icons/fa";
 import axios from "axios";
-import Cookies from "universal-cookie";
 import shopping from "../images/work-order.png";
 import list from "../images/list.gif";
 import bin from "../images/bin.gif";
 
 function Plans() {
-  const cookies = new Cookies();
-  const userId = cookies.get("userId");
-
-  // Check for invalid userId and sectionId
-  if (!userId) {
-    alert("Invalid user, please refresh the page.");
-    window.location.reload(); // Refresh the page if userId is not found
-  }
+  const planId = sessionStorage.getItem("planId");
 
   const [sections, setSections] = useState([]);
   const [newSection, setNewSection] = useState("");
   const [newTask, setNewTask] = useState("");
   const [editing, setEditing] = useState(null);
-  const [activeSectionId, setActiveSectionId] = useState(null); // Track which section is active
+  const [activeSectionId, setActiveSectionId] = useState(null);
 
+  //done
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/plans/${userId}/getAll`)
+      .get(`http://localhost:5000/plans/${planId}/getAll`)
       .then((response) => {
         if (response.status === 200 && response.data) {
           setSections(response.data);
@@ -39,15 +32,15 @@ function Plans() {
       .catch((err) => {
         console.error("Error fetching data:", err);
       });
-  }, [userId]);
+  }, [planId]);
 
-  // Add new section
+  //done
   const addSection = async () => {
     if (!newSection.trim()) return;
 
     try {
       const response = await axios.post(
-        `http://localhost:5000/plans/${userId}/section`,
+        `http://localhost:5000/plans/${planId}/section`,
         { title: newSection }
       );
 
@@ -57,11 +50,11 @@ function Plans() {
     } catch (error) {
       console.error("Error adding section:", error);
     } finally {
-      setNewSection(""); // Clear the input field
+      setNewSection("");
     }
   };
 
-  // Add a new task
+  //done
   const addTask = async (sectionId) => {
     if (!newTask.trim()) return;
 
@@ -76,7 +69,7 @@ function Plans() {
         section._id === sectionId
           ? {
               ...section,
-              tasks: [...section.tasks, { ...newTaskObject, _id: Date.now() }], // Add task locally
+              tasks: [...section.tasks, { ...newTaskObject, _id: Date.now() }],
             }
           : section
       )
@@ -84,7 +77,7 @@ function Plans() {
 
     try {
       const response = await axios.post(
-        `http://localhost:5000/plans/${userId}/section/${sectionId}/task`,
+        `http://localhost:5000/plans/${planId}/section/${sectionId}/task`,
         { task: newTask }
       );
 
@@ -96,7 +89,7 @@ function Plans() {
                   ...section,
                   tasks: section.tasks.map((task) =>
                     task._id === newTaskObject._id
-                      ? { ...task, _id: response.data._id } // Replace with real task id
+                      ? { ...task, _id: response.data._id }
                       : task
                   ),
                 }
@@ -106,7 +99,7 @@ function Plans() {
       }
     } catch (err) {
       console.error("Error adding task:", err);
-      // Rollback in case of error by filtering based on temporary _id
+
       setSections((prev) =>
         prev.map((section) =>
           section._id === sectionId
@@ -120,18 +113,18 @@ function Plans() {
         )
       );
     } finally {
-      setNewTask(""); // Clear task input field
+      setNewTask("");
     }
   };
 
-  // Toggle task input visibility
+  //done
   const toggleTaskInputVisibility = (sectionId) => {
     setActiveSectionId((prevActiveSectionId) =>
       prevActiveSectionId === sectionId ? null : sectionId
     );
   };
 
-  // Delete task
+  //done
   const deleteTask = async (sectionId, taskId) => {
     setSections((prev) =>
       prev.map((section) =>
@@ -146,18 +139,18 @@ function Plans() {
 
     try {
       await axios.delete(
-        `http://localhost:5000/plans/${userId}/delete/${sectionId}/sectionId/${taskId}/taskId`
+        `http://localhost:5000/plans/${planId}/delete/${sectionId}/sectionId/${taskId}/taskId`
       );
     } catch (err) {
       console.error("Error deleting task:", err);
     }
   };
 
-  // Delete section
+  //done
   const deleteSection = async (sectionId) => {
     try {
       await axios.delete(
-        `http://localhost:5000/plans/${userId}/delete/${sectionId}/sectionId`
+        `http://localhost:5000/plans/${planId}/delete/${sectionId}/sectionId`
       );
 
       setSections((prev) =>
@@ -170,7 +163,7 @@ function Plans() {
 
   const editTask = async (sectionId, taskId, updatedTask) => {
     await axios.put(
-      `http://localhost:5000/plans/${userId}/section/${sectionId}/task/${taskId}`,
+      `http://localhost:5000/plans/${planId}/section/${sectionId}/task/${taskId}`,
       { task: updatedTask }
     );
     setSections((prev) =>
@@ -213,11 +206,8 @@ function Plans() {
             <img src={shopping} alt="No plans" />
           </div>
         ) : (
-          sections.map((section) => (
-            <div
-              key={section._id}
-              className="bg-white p-4 mb-6 rounded-xl shadow-md"
-            >
+          sections.map((section, index) => (
+            <div key={index} className="bg-white p-4 mb-6 rounded-xl shadow-md">
               <div className="flex justify-between items-center mb-4">
                 <div className="text-2xl font-semibold flex items-center">
                   <img src={list} alt="List" className="w-8 h-8" />

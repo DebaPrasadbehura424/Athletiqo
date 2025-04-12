@@ -49,8 +49,8 @@ module.exports.RegisterUser = async (req, res) => {
       firstName,
       email,
       password: hashedPassword,
-      goalsdetails: saveNewGoal._id,
-      planList: saveNewPlan._id,
+      goaldetails: saveNewGoal._id,
+      todoList: saveNewPlan._id,
     });
 
     const savedUser = await newUser.save();
@@ -68,13 +68,10 @@ module.exports.RegisterUser = async (req, res) => {
     );
 
     res.status(201).json({
-      message: "User registered successfully",
       token,
-      user: {
-        id: savedUser._id,
-        firstName: savedUser.firstName,
-        email: savedUser.email,
-      },
+      id: savedUser._id,
+      goalId: saveNewGoal._id,
+      planId: saveNewPlan._id,
     });
   } catch (err) {
     console.error(err);
@@ -86,7 +83,6 @@ module.exports.LoginUser = async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await userModel.findOne({ email });
-
     if (!user) {
       return res.status(400).json({ message: "User not found!" });
     }
@@ -101,7 +97,11 @@ module.exports.LoginUser = async (req, res) => {
       { expiresIn: "24h" }
     );
 
-    const userGoal = await Goal.findOne({ user: user._id });
+    const goalId = user.goaldetails._id.toString();
+    const planId = user.todoList._id.toString();
+    console.log(goalId);
+
+    const userGoal = await Goal.findById(goalId);
     if (!userGoal) {
       return res.status(404).json({ message: "Goal data not found!" });
     }
@@ -110,8 +110,9 @@ module.exports.LoginUser = async (req, res) => {
 
     return res.status(200).json({
       token,
-      user,
-      goal: userGoal,
+      id: userGoal._id,
+      goalId: goalId,
+      planId: planId,
     });
   } catch (error) {
     console.error(error);

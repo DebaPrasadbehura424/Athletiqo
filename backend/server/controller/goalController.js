@@ -1,9 +1,9 @@
 const goalModel = require("../model/GoalModel");
 
 module.exports.getUserDetails = async (req, res) => {
-  const userId = req.params.userId;
+  const { goalId } = req.params;
   try {
-    const currentUser = await goalModel.findOne({ user: userId });
+    const currentUser = await goalModel.findById(goalId);
     if (!currentUser) {
       return res
         .status(404)
@@ -18,7 +18,7 @@ module.exports.getUserDetails = async (req, res) => {
 };
 
 module.exports.updateUserDetails = async (req, res) => {
-  const { userId } = req.params;
+  const { goalId } = req.params;
   const {
     currentWeight,
     targetWeight,
@@ -29,11 +29,11 @@ module.exports.updateUserDetails = async (req, res) => {
     age,
   } = req.body;
   try {
-    const user = await goalModel.findOne({ user: userId });
+    const user = await goalModel.findById(goalId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    user.currentWeight = currentWeight || user.currentWeight;
+    user.currenWeight = currentWeight || user.currentWeight;
     user.targetWeight = targetWeight || user.targetWeight;
     user.sleepGoal = sleepGoal || user.sleepGoal;
     user.readingGoal = readingGoal || user.readingGoal;
@@ -54,10 +54,10 @@ module.exports.updateUserDetails = async (req, res) => {
 
 module.exports.incrementGoalProgress = async (req, res) => {
   const { goalType, amount } = req.body;
-  const userId = req.params.userId;
+  const { goalId } = req.params;
 
   try {
-    const userGoal = await goalModel.findOne({ user: userId });
+    const userGoal = await goalModel.findById(goalId);
     if (!userGoal) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -72,18 +72,40 @@ module.exports.incrementGoalProgress = async (req, res) => {
 
 module.exports.addAllponits = async (req, res) => {
   const { points } = req.body;
-  const { userId } = req.params;
+  const { goalId } = req.params;
 
   try {
-    const userGoal = await goalModel.findOne({ user: userId });
+    const userGoal = await goalModel.findById(goalId);
     if (!userGoal) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    userGoal.addDailyPoint(points);
-    
+    await userGoal.addDailyPoint(points);
 
     res.status(200).json({ message: "Points added successfully", userGoal });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+module.exports.updateTaskCal = async (req, res) => {
+  const { time, goalId } = req.params;
+  try {
+    const userGoal = await goalModel.findById(goalId);
+    if (!userGoal) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (time == "dinner") {
+      userGoal.tracks.dinner = !userGoal.tracks.dinner;
+    } else if (time == "lunch") {
+      userGoal.tracks.lunch = !userGoal.tracks.lunch;
+    } else {
+      userGoal.tracks.breakFast = !userGoal.tracks.breakFast;
+    }
+    await userGoal.save();
+    res.status(200).json("update succesfully");
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });

@@ -1,93 +1,85 @@
 import React from "react";
-import { FaTrophy, FaMedal, FaShieldAlt } from "react-icons/fa"; // Importing icons for top 3 ranks
+import { FaTrophy, FaMedal, FaShieldAlt } from "react-icons/fa";
 import Navbar from "../Components/Navbar";
 
-// Random names and points
 const names = [
-  "Alice",
-  "Bob",
-  "Charlie",
-  "David",
-  "Eve",
-  "Frank",
-  "Grace",
-  "Hannah",
-  "Ivy",
-  "Jack",
+  "Sophie",
+  "Liam",
+  "Emma",
+  "Noah",
+  "Olivia",
+  "Mason",
+  "Ava",
+  "Ethan",
+  "Isabella",
+  "Lucas",
 ];
 
-const getRandomPoints = () => Math.floor(Math.random() * 1000) + 1;
-
 const Leaderboard = () => {
-  // Create 10 random leaderboard entries
   const leaderboardData = names.map((name, index) => ({
     rank: index + 1,
-    profile: `https://randomuser.me/api/portraits/men/${index + 10}.jpg`, // Random image for profile
+    profile: `https://i.pravatar.cc/150?img=${index + 30}`,
     name,
-    points: getRandomPoints(),
+    points: Math.floor(Math.random() * 2000) + 1000,
+    achievements: Math.floor(Math.random() * 30) + 10,
+    lastActive: new Date(
+      Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000
+    ).toLocaleDateString(),
   }));
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="min-h-screen bg-gradient-to-tr from-purple-900 via-blue-900 to-blue-700 p-4 sm:p-6 md:p-8 font-sans">
       <Navbar />
-
-      <div className="overflow-x-auto mt-6">
-        <table className="min-w-full table-auto bg-white text-black">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="px-6 py-4 text-left">Rank</th>
-              <th className="px-6 py-4 text-left">Profile</th>
-              <th className="px-6 py-4 text-left">Name</th>
-              <th className="px-6 py-4 text-left">Points</th>
-            </tr>
-          </thead>
-          <tbody>
-            {leaderboardData.sort().map((entry, index) => (
-              <tr
-                key={entry.rank}
-                className={
-                  index === 0
-                    ? "bg-blue-500 text-white"
-                    : index === 1
-                    ? "bg-green-500 text-white"
-                    : index === 2
-                    ? "bg-yellow-500 text-white"
-                    : index % 5 === 0
-                    ? "bg-pink-500 text-white"
-                    : index % 5 === 1
-                    ? "bg-purple-500 text-white"
-                    : index % 5 === 2
-                    ? "bg-teal-500 text-white"
-                    : index % 5 === 3
-                    ? "bg-indigo-500 text-white"
-                    : "bg-red-500 text-white"
-                }
-              >
-                <td className="px-6 py-6">{entry.rank}</td>
-                <td className="px-6 py-6">
-                  <img
-                    src={entry.profile}
-                    alt={entry.name}
-                    className="w-12 h-12 rounded-full"
-                  />
-                </td>
-                <td className="px-6 py-6 font-semibold">
-                  {entry.rank === 1 && (
-                    <FaTrophy className="inline text-yellow-500 mr-2" />
-                  )}
-                  {entry.rank === 2 && (
-                    <FaMedal className="inline text-gray-500 mr-2" />
-                  )}
-                  {entry.rank === 3 && (
-                    <FaShieldAlt className="inline text-amber-700 mr-2" />
-                  )}
+      <div className="max-w-5xl mx-auto">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-center text-white mb-8 sm:mb-12 drop-shadow-2xl animate-fade-in">
+          Cosmic Leaderboard
+        </h1>
+        <div className="grid gap-4 sm:gap-6 md:gap-8">
+          {leaderboardData.map((entry, index) => (
+            <div
+              key={entry.rank}
+              className={`relative flex items-center p-4 sm:p-6 rounded-2xl shadow-2xl transform transition-all duration-500 hover:scale-105 hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] ${
+                index === 0
+                  ? "bg-gradient-to-r from-yellow-500 to-amber-600"
+                  : index === 1
+                  ? "bg-gradient-to-r from-gray-400 to-gray-600"
+                  : index === 2
+                  ? "bg-gradient-to-r from-amber-600 to-amber-800"
+                  : index % 2 === 0
+                  ? "bg-gradient-to-r from-blue-600 to-blue-800"
+                  : "bg-gradient-to-r from-purple-600 to-purple-800"
+              } text-white animate-slide-up`}
+              style={{ animationDelay: `${index * 0.1}s` }}
+            >
+              <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.4)_0%,transparent_70%)] rounded-2xl pointer-events-none"></div>
+              <div className="flex items-center justify-center w-12 sm:w-16 text-xl sm:text-2xl font-bold gap-2 z-10">
+                {entry.rank === 1 && <FaTrophy className="text-yellow-200" />}
+                {entry.rank === 2 && <FaMedal className="text-gray-200" />}
+                {entry.rank === 3 && <FaShieldAlt className="text-amber-300" />}
+                <span>{entry.rank}</span>
+              </div>
+              <img
+                src={entry.profile}
+                alt={entry.name}
+                className="w-12 h-12 sm:w-16 sm:h-16 rounded-full border-4 border-white/80 mx-4 sm:mx-6 object-cover transition-transform duration-300 hover:scale-110 z-10"
+              />
+              <div className="flex-1 z-10">
+                <h2 className="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight">
                   {entry.name}
-                </td>
-                <td className="px-6 py-6">{entry.points}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                </h2>
+                <p className="text-base sm:text-lg font-medium text-gray-100">
+                  {entry.points} Points
+                </p>
+                <p className="text-sm sm:text-base text-gray-200">
+                  Achievements: {entry.achievements}
+                </p>
+                <p className="text-sm sm:text-base text-gray-200">
+                  Last Active: {entry.lastActive}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

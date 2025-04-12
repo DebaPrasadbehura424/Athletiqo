@@ -4,13 +4,10 @@ import TrackCal from "../Components/TrackCal";
 import GoalsCard from "../Components/GoalCard";
 import Footer from "../Components/Footer";
 import axios from "axios";
-import Cookies from "universal-cookie";
 import { userContextData } from "../context/UserContext";
 
 function Progress(props) {
-  const cookies = new Cookies();
-  const token = cookies.get("token");
-  const userId = cookies.get("userId");
+  const goalId = sessionStorage.getItem("goalId");
 
   const { userData, setUserData } = useContext(userContextData);
 
@@ -18,7 +15,7 @@ function Progress(props) {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/goals/getUserdetails/${userId}`)
+      .get(`http://localhost:5000/goals/getUserdetails/${goalId}`)
       .then((response) => {
         if (response.status === 200) {
           setUserData(response.data);
@@ -30,7 +27,7 @@ function Progress(props) {
       .finally(() => {
         setIsLoading(false);
       });
-  }, [userId]);
+  }, [goalId]);
 
   if (isLoading) {
     return (

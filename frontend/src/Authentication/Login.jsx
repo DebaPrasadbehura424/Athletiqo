@@ -48,11 +48,14 @@ const Login = () => {
           text: "Welcome back to your account.",
         }).then(() => {
           const token = response.data.token;
-          const userId = response.data.user.id
-            ? response.data.user.id.toString()
-            : null;
-          cookies.set("token", token);
-          cookies.set("userId", userId);
+          const userId = response.data.id;
+          const goalId = response.data.goalId;
+          const planId = response.data.planId;
+          sessionStorage.setItem("token", token);
+          sessionStorage.setItem("userId", userId);
+          sessionStorage.setItem("goalId", goalId);
+          sessionStorage.setItem("planId", planId);
+          localStorage.setItem("token", token);
           navigate("/progress");
         });
       }

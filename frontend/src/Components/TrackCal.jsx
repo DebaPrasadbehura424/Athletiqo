@@ -2,80 +2,90 @@ import React, { useContext, useEffect, useState } from "react";
 import { GiElectric } from "react-icons/gi";
 import Diet from "../images/diet.png";
 import { userContextData } from "../context/UserContext";
+import axios from "axios";
 
-function TrackCal(props) {
+function TrackCal() {
   const [waterLevel, setWaterLevel] = useState(0);
   const [calories, setCalories] = useState(0);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const goalId = sessionStorage.getItem("goalId");
 
   const { userData } = useContext(userContextData);
-
   const age = userData?.age || 0;
 
   const [mealCalories, setMealCalories] = useState({
-    breakfast: { calory: 0, isCompltere: false },
-    lunch: { calory: 0, isCompltere: false },
-    dinner: { calory: 0, isCompltere: false },
+    breakfast: { calory: 0, isComplete: false },
+    lunch: { calory: 0, isComplete: false },
+    dinner: { calory: 0, isComplete: false },
   });
 
-  useEffect(() => {
-    let updatedMealCalories = {};
-
-    if (age <= 20) {
-      updatedMealCalories = {
-        breakfast: { calory: 350, isCompltere: false },
-        lunch: { calory: 450, isCompltere: false },
-        dinner: { calory: 400, isCompltere: false },
-      };
-    } else if (age > 20 && age <= 40) {
-      updatedMealCalories = {
-        breakfast: { calory: 500, isCompltere: false },
-        lunch: { calory: 700, isCompltere: false },
-        dinner: { calory: 600, isCompltere: false },
-      };
-    } else if (age > 40 && age <= 60) {
-      updatedMealCalories = {
-        breakfast: { calory: 450, isCompltere: false },
-        lunch: { calory: 650, isCompltere: false },
-        dinner: { calory: 550, isCompltere: false },
-      };
-    } else if (age > 60) {
-      updatedMealCalories = {
-        breakfast: { calory: 400, isCompltere: false },
-        lunch: { calory: 600, isCompltere: false },
-        dinner: { calory: 500, isCompltere: false },
-      };
-    }
-
-    setMealCalories(updatedMealCalories);
-  }, [age]);
-
-  // Track selected meals
   const [selectedMeals, setSelectedMeals] = useState({
     breakfast: false,
     lunch: false,
     dinner: false,
   });
 
+  useEffect(() => {
+    if (userData?.tracks) {
+      setSelectedMeals({
+        breakfast: userData?.tracks?.breakFast || false,
+        lunch: userData?.tracks?.lunch || false,
+        dinner: userData?.tracks?.dinner || false,
+      });
+    }
+  }, [userData]);
+
+  useEffect(() => {
+    let updatedMealCalories = {};
+    if (age <= 20) {
+      updatedMealCalories = {
+        breakfast: { calory: 350, isComplete: false },
+        lunch: { calory: 450, isComplete: false },
+        dinner: { calory: 400, isComplete: false },
+      };
+    } else if (age > 20 && age <= 40) {
+      updatedMealCalories = {
+        breakfast: { calory: 500, isComplete: false },
+        lunch: { calory: 700, isComplete: false },
+        dinner: { calory: 600, isComplete: false },
+      };
+    } else if (age > 40 && age <= 60) {
+      updatedMealCalories = {
+        breakfast: { calory: 450, isComplete: false },
+        lunch: { calory: 650, isComplete: false },
+        dinner: { calory: 550, isComplete: false },
+      };
+    } else if (age > 60) {
+      updatedMealCalories = {
+        breakfast: { calory: 400, isComplete: false },
+        lunch: { calory: 600, isComplete: false },
+        dinner: { calory: 500, isComplete: false },
+      };
+    }
+    setMealCalories(updatedMealCalories);
+  }, [age]);
+
+  useEffect(() => {
+    const newCalories = Object.keys(selectedMeals)
+      .filter((meal) => selectedMeals[meal])
+      .reduce((sum, meal) => sum + mealCalories[meal].calory, 0);
+
+    setCalories(newCalories);
+    const newWaterLevel = (newCalories / totalCalories) * 100;
+    setWaterLevel(newWaterLevel);
+  }, [selectedMeals, mealCalories]);
+
   const totalCalories = Object.values(mealCalories).reduce((sum, meal) => {
     return sum + meal.calory;
   }, 0);
 
-  const handleMealSelection = (meal) => {
-    setSelectedMeals((prevState) => {
-      const updatedMeals = { ...prevState, [meal]: !prevState[meal] };
+  const handleMealSelection = async (meal) => {
+    setSelectedMeals((prevState) => ({
+      ...prevState,
+      [meal]: !prevState[meal],
+    }));
 
-      const newCalories = Object.keys(updatedMeals)
-        .filter((meal) => updatedMeals[meal])
-        .reduce((sum, meal) => sum + mealCalories[meal].calory, 0);
-
-      setCalories(newCalories);
-
-      const newWaterLevel = (newCalories / totalCalories) * 100;
-      setWaterLevel(newWaterLevel);
-
-      return updatedMeals;
-    });
+    await axios.patch(`http://localhost:5000/goals/trackCal/${meal}/${goalId}`);
   };
 
   const togglePopup = () => {
@@ -88,8 +98,7 @@ function TrackCal(props) {
         <h3 className="text-2xl font-semibold text-gray-800 mb-4">
           Today's Calories
         </h3>
-
-        <div className="grid md:grid-cols-3 grid-cols-2 gap-5 justify-evenly items-start lg:space-x-8 md:px-50 ">
+        <div className="grid md:grid-cols-3 grid-cols-2 gap-5 justify-evenly items-start lg:space-x-8 md:px-50">
           <div className="flex flex-col items-center lg:items-start space-y-4 w-full lg:w-auto">
             <div className="w-25 h-25 flex justify-center items-center">
               <img src={Diet} alt="Diet" className="md:w-full md:h-full" />
@@ -99,7 +108,7 @@ function TrackCal(props) {
                 Track Food
               </h3>
               <p className="text-gray-600">{calories} cal</p>
-            </div>                                               
+            </div>
             <button
               onClick={togglePopup}
               className="bg-blue-500 text-white py-2 px-4 rounded-lg shadow-md mt-4"
@@ -107,7 +116,6 @@ function TrackCal(props) {
               Track My Meal
             </button>
           </div>
-
           <div className="relative w-32 h-48 md:ml-20 md:w-36 md:h-52 lg:w-40 lg:h-56 mt-6 lg:mt-0 flex flex-col justify-center items-center">
             <div className="relative w-full h-full battery-shape">
               <div
@@ -122,7 +130,6 @@ function TrackCal(props) {
               {calories}/{totalCalories} cal
             </div>
           </div>
-
           <div className="grid md:grid-cols-2 items-center lg:items-end space-x-6 md:space-x-0 space-y-3 md:space-y-4 mt-6 lg:mt-0 w-full lg:w-auto gap-6">
             {["breakfast", "lunch", "dinner"].map((meal) => (
               <label
@@ -143,7 +150,6 @@ function TrackCal(props) {
             ))}
           </div>
         </div>
-
         {isPopupOpen && (
           <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50 p-4">
             <div className="bg-white p-8 rounded-lg shadow-lg max-w-lg w-full">

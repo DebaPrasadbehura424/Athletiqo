@@ -1,25 +1,23 @@
 import React, { useContext, useState, useEffect } from "react";
 import axios from "axios";
-import Cookies from "universal-cookie";
 import Swal from "sweetalert2";
-import UserContext, { userContextData } from "../context/UserContext";
+import userContextData from "../context/UserContext";
 
 function GoalsSetter() {
-  const { userData, setUserData } = useContext(userContextData);
-  const cookies = new Cookies();
-  const userId = cookies.get("userId");
+  const context = useContext(userContextData);
+  const userData = context?.userData;
+
+  const goalId = sessionStorage.getItem("goalId");
 
   const [currentWeight, setCurrentWeight] = useState(
-    userData?.currentWeight || ""
+    userData?.currentWeight || 0
   );
-  const [targetWeight, setTargetWeight] = useState(
-    userData?.targetWeight || ""
-  );
-  const [sleepGoal, setSleepGoal] = useState(userData?.sleepGoal || "");
-  const [readingGoal, setReadingGoal] = useState(userData?.readingGoal || "");
-  const [waterGoal, setWaterGoal] = useState(userData?.waterGoal || "");
-  const [walkingGoal, setWalkingGoal] = useState(userData?.walkingGoal || "");
-  const [age, setAge] = useState(userData?.age || "");
+  const [targetWeight, setTargetWeight] = useState(userData?.targetWeight || 0);
+  const [sleepGoal, setSleepGoal] = useState(userData?.sleepGoal || 0);
+  const [readingGoal, setReadingGoal] = useState(userData?.readingGoal || 0);
+  const [waterGoal, setWaterGoal] = useState(userData?.waterGoal || 0);
+  const [walkingGoal, setWalkingGoal] = useState(userData?.walkingGoal || 0);
+  const [age, setAge] = useState(userData?.age || 0);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
@@ -38,7 +36,7 @@ function GoalsSetter() {
 
     try {
       const response = await axios.put(
-        `http://localhost:5000/goals/updateUserdetails/${userId}`,
+        `http://localhost:5000/goals/updateUserdetails/${goalId}`,
         goalData
       );
 
@@ -61,7 +59,6 @@ function GoalsSetter() {
     <div className="max-w-4xl mx-auto p-6">
       <h1 className="text-2xl font-bold text-center mb-6">Set Your Goals</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Current Weight */}
         <div>
           <label
             htmlFor="currentWeight"
@@ -79,7 +76,6 @@ function GoalsSetter() {
           />
         </div>
 
-        {/* Target Weight */}
         <div>
           <label
             htmlFor="targetWeight"
@@ -97,7 +93,6 @@ function GoalsSetter() {
           />
         </div>
 
-        {/* Sleep Goal */}
         <div>
           <label
             htmlFor="sleepGoal"
@@ -115,7 +110,6 @@ function GoalsSetter() {
           />
         </div>
 
-        {/* Reading Goal */}
         <div>
           <label
             htmlFor="readingGoal"
@@ -133,7 +127,6 @@ function GoalsSetter() {
           />
         </div>
 
-        {/* Water Goal */}
         <div>
           <label
             htmlFor="waterGoal"
@@ -151,7 +144,6 @@ function GoalsSetter() {
           />
         </div>
 
-        {/* Walking Goal */}
         <div>
           <label
             htmlFor="walkingGoal"
@@ -169,7 +161,6 @@ function GoalsSetter() {
           />
         </div>
 
-        {/* Age */}
         <div>
           <label
             htmlFor="age"
@@ -187,7 +178,6 @@ function GoalsSetter() {
           />
         </div>
 
-        {/* Submit Button */}
         <button
           type="submit"
           className="w-full py-2 px-4 mt-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500"
@@ -196,7 +186,6 @@ function GoalsSetter() {
         </button>
       </form>
 
-      {/* Success or Error Message */}
       {message && <div className="mt-4 text-green-500">{message}</div>}
       {error && <div className="mt-4 text-red-500">{error}</div>}
     </div>

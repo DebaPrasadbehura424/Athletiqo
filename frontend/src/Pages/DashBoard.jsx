@@ -19,12 +19,11 @@ import Growth from "./Growth";
 import GoalsSetter from "./GoalsSetter";
 
 function DashBoard(props) {
-  const cookie = new Cookies();
   const navigate = useNavigate(null);
 
   function logoutUser() {
-    cookie.remove("token");
-    cookie.remove("userId");
+    sessionStorage.remove("token");
+    sessionStorage.remove("userId");
     navigate("/");
   }
 
@@ -82,7 +81,6 @@ function DashBoard(props) {
               <p>Progress</p>
             </NavLink>
 
-            {/* Leaderboard - NavLink */}
             <NavLink
               to="/leaderboard"
               className={({ isActive }) =>
@@ -95,7 +93,6 @@ function DashBoard(props) {
               <p>Leaderboard</p>
             </NavLink>
 
-            {/* Information (No link) */}
             <div className="flex items-center space-x-3 cursor-pointer hover:bg-blue-600 p-2 rounded-lg">
               <FaInfoCircle className="text-xl" />
               <p>Information</p>
@@ -103,7 +100,6 @@ function DashBoard(props) {
           </div>
         </div>
 
-        {/* Logout at the bottom */}
         <div
           className="mt-auto flex items-center space-x-2 cursor-pointer hover:bg-blue-600 p-2 rounded-lg"
           onClick={logoutUser}
@@ -118,7 +114,6 @@ function DashBoard(props) {
         <div className="w-full bg-white shadow-md p-3 md:flex justify-end items-center relative">
           <div className="md:hidden absolute right-3 top-3">
             <button onClick={toggleDropdown} className="text-xl text-blue-600">
-              {/* Show Cross Icon when dropdown is open, else Hamburger Icon */}
               {isDropdownOpen ? <FaTimes /> : <FaBars />}
             </button>
 

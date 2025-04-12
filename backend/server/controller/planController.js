@@ -3,14 +3,10 @@ const mongoose = require("mongoose");
 
 module.exports.addSections = async (req, res) => {
   const { title, tasks } = req.body;
-  const userId = req.params.userId;
+  const { planId } = req.params;
 
   try {
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(400).json({ message: "Invalid user ID" });
-    }
-
-    const userPlan = await Plan.findOne({ user: userId });
+    const userPlan = await Plan.findById(planId);
 
     if (!userPlan) {
       return res.status(404).json({ message: "User plan not found!" });
@@ -32,29 +28,24 @@ module.exports.addSections = async (req, res) => {
 };
 
 module.exports.addTask = async (req, res) => {
-  const { userId, sectionId } = req.params;
+  const { planId, sectionId } = req.params;
   const { task, dueDate } = req.body;
 
   try {
-    if (
-      !mongoose.Types.ObjectId.isValid(userId) ||
-      !mongoose.Types.ObjectId.isValid(sectionId)
-    ) {
-      return res.status(400).json({ message: "Invalid section or user ID" });
-    }
-
-    const plan = await Plan.findOne({
-      user: userId,
-      "sections._id": sectionId,
-    });
+    const plan = await Plan.findById(planId);
 
     if (!plan) {
-      return res.status(404).json({ message: "Plan or section not found" });
+      return res.status(404).json({ message: "Plan not found" });
     }
 
     const section = plan.sections.id(sectionId);
+
+    if (!section) {
+      return res.status(404).json({ message: "Section not found" });
+    }
+
     const newTask = {
-      task: task,
+      task,
       completed: false,
       dueDate: dueDate || null,
     };
@@ -62,24 +53,18 @@ module.exports.addTask = async (req, res) => {
     section.tasks.push(newTask);
     await plan.save();
 
-    res.status(201).json(newTask);
+    res.status(201).json({ message: "Task added successfully", plan });
   } catch (error) {
-    console.error(error);
+    console.error("Error adding task:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
 module.exports.getAllTask = async (req, res) => {
-  const userId = req.params.userId;
+  const { planId } = req.params;
 
   try {
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(400).json({ message: "Invalid user ID" });
-    }
-
-    const plan = await Plan.findOne({ user: userId }).populate(
-      "sections.tasks"
-    );
+    const plan = await Plan.findById(planId).populate("sections.tasks");
 
     if (!plan) {
       return res.status(404).json({ message: "No plan found for this user" });
@@ -91,19 +76,11 @@ module.exports.getAllTask = async (req, res) => {
     res.status(500).json({ message: "Server error, please try again later." });
   }
 };
-
 module.exports.deleteSectionBySectionId = async (req, res) => {
-  const { userId, sectionId } = req.params;
+  const { planId, sectionId } = req.params;
 
   try {
-    if (
-      !mongoose.Types.ObjectId.isValid(userId) ||
-      !mongoose.Types.ObjectId.isValid(sectionId)
-    ) {
-      return res.status(400).json({ message: "Invalid user or section ID" });
-    }
-
-    const userPlan = await Plan.findOne({ user: userId });
+    const userPlan = await Plan.findById(planId);
 
     if (!userPlan) {
       return res.status(404).json({ message: "User plan not found" });
@@ -128,20 +105,10 @@ module.exports.deleteSectionBySectionId = async (req, res) => {
 };
 
 module.exports.deleteTaskByTaskId = async (req, res) => {
-  const { userId, sectionId, taskId } = req.params;
+  const { planId, sectionId, taskId } = req.params;
 
   try {
-    if (
-      !mongoose.Types.ObjectId.isValid(userId) ||
-      !mongoose.Types.ObjectId.isValid(sectionId) ||
-      !mongoose.Types.ObjectId.isValid(taskId)
-    ) {
-      return res
-        .status(400)
-        .json({ message: "Invalid user, section, or task ID" });
-    }
-
-    const userPlan = await Plan.findOne({ user: userId });
+    const userPlan = await Plan.findById(planId);
 
     if (!userPlan) {
       return res.status(404).json({ message: "User plan not found" });
@@ -165,19 +132,11 @@ module.exports.deleteTaskByTaskId = async (req, res) => {
 };
 
 module.exports.editTask = async (req, res) => {
-  const { userId, sectionId, taskId } = req.params;
+  const { planId, sectionId, taskId } = req.params;
   const { task, dueDate } = req.body;
 
   try {
-    if (
-      !mongoose.Types.ObjectId.isValid(userId) ||
-      !mongoose.Types.ObjectId.isValid(sectionId) ||
-      !mongoose.Types.ObjectId.isValid(taskId)
-    ) {
-      return res.status(400).json({ message: "Invalid IDs" });
-    }
-
-    const userPlan = await Plan.findOne({ user: userId });
+    const userPlan = await Plan.findById(planId);
 
     if (!userPlan) {
       return res.status(404).json({ message: "User plan not found" });

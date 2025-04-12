@@ -5,15 +5,12 @@ import { useNavigate } from "react-router-dom";
 import { FaWeight, FaBed, FaWalking } from "react-icons/fa";
 import { FcInternal, FcSearch } from "react-icons/fc";
 import Swal from "sweetalert2";
-import Cookies from "universal-cookie";
 import axios from "axios";
 
 const GoalsCard = () => {
   const { userData, setUserData } = useContext(userContextData);
   const navigate = useNavigate(null);
-  const cookie = new Cookies();
-  const userId = cookie.get("userId");
-  // const [points, setPonits] = useState(0);
+  const goalId = sessionStorage.getItem("goalId");
 
   const [currentWeight, setCurrentWeight] = useState(
     userData?.currentWeight || 0
@@ -54,7 +51,7 @@ const GoalsCard = () => {
       setGoalValue(goalCurrentValue + 1);
       try {
         const response = await axios.patch(
-          `http://localhost:5000/goals/incrementGoal/${userId}`,
+          `http://localhost:5000/goals/incrementGoal/${goalId}`,
           {
             goalType: goalUpdate,
             amount: 1,
@@ -78,7 +75,7 @@ const GoalsCard = () => {
         title: `Today ${goalName} is complete`,
       }).then(async () => {
         try {
-          await axios.patch(`http://localhost:5000/goals/addPoints/${userId}`, {
+          await axios.patch(`http://localhost:5000/goals/addPoints/${goalId}`, {
             points: 5,
           });
 

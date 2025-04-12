@@ -65,14 +65,23 @@ const goalSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  tracks: {
+    breakFast: { type: Boolean, default: false },
+    lunch: { type: Boolean, default: false },
+    dinner: { type: Boolean, default: false },
+  },
 });
 
 goalSchema.methods.resetGoalsIfDayChanged = function () {
   const currentDate = new Date();
+  const storedDate = this.currentDay ? new Date(this.currentDay) : new Date(0);
 
-  const currentDay = new Date(this.currentDay);
+  const isSameDay =
+    currentDate.getFullYear() === storedDate.getFullYear() &&
+    currentDate.getMonth() === storedDate.getMonth() &&
+    currentDate.getDate() === storedDate.getDate();
 
-  if (currentDate.getTime() !== currentDay.getTime()) {
+  if (!isSameDay) {
     if (this.dailyPoints.length >= 7) {
       this.dailyPoints.shift();
     }
@@ -85,7 +94,15 @@ goalSchema.methods.resetGoalsIfDayChanged = function () {
     this.waterGoalOneDay = 0;
     this.walkingGoalOneDay = 0;
 
-    this.currentDay = currentDate;
+    this.tracks.breakFast = false;
+    this.tracks.lunch = false;
+    this.tracks.dinner = false;
+
+    this.currentDay = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      currentDate.getDate()
+    );
 
     return this.save();
   }
@@ -96,7 +113,6 @@ goalSchema.methods.resetGoalsIfDayChanged = function () {
 goalSchema.methods.addDailyPoint = function (newPoint) {
   this.todayPoints += newPoint;
   this.totalPoints += newPoint;
-
   return this.save();
 };
 
