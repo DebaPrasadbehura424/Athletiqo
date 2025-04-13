@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 function connectDB(req, res) {
-  // const URI =
-  // "mongodb+srv://debaprasadbehura89:SrOPEXkCoTHEx1Fc@cluster0.9chhe.mongodb.net/Namaste?retryWrites=true&w=majority&appName=Cluster0";
-  const URI = "mongodb://localhost:27017/Fityatra";
+  const URI =
+    "mongodb+srv://debaprasadbehura89:SrOPEXkCoTHEx1Fc@cluster0.9chhe.mongodb.net/Fityatra?retryWrites=true&w=majority&appName=Cluster0";
+  // const URI = "mongodb://localhost:27017/Fityatra";
 
   mongoose
     .connect(URI)
