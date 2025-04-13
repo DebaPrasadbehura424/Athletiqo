@@ -5,6 +5,8 @@ import { userContextData } from "../context/UserContext";
 import axios from "axios";
 
 function TrackCal() {
+  // const url = "http://localhost:5000";
+  const url = "https://athletiqo-backend.vercel.app";
   const [waterLevel, setWaterLevel] = useState(0);
   const [calories, setCalories] = useState(0);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -85,7 +87,7 @@ function TrackCal() {
       [meal]: !prevState[meal],
     }));
 
-    await axios.patch(`http://localhost:5000/goals/trackCal/${meal}/${goalId}`);
+    await axios.patch(`${url}/goals/trackCal/${meal}/${goalId}`);
   };
 
   const togglePopup = () => {

@@ -10,6 +10,8 @@ import Swal from "sweetalert2";
 import Cookies from "universal-cookie";
 
 const Login = () => {
+  // const url = "http://localhost:5000";
+  const url = "https://athletiqo-backend.vercel.app";
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -36,10 +38,10 @@ const Login = () => {
     }
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/user/userLogin",
-        { email, password }
-      );
+      const response = await axios.post(`${url}/user/userLogin`, {
+        email,
+        password,
+      });
 
       if (response.status === 200) {
         Swal.fire({

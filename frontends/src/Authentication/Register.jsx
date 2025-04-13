@@ -7,6 +7,8 @@ import Swal from "sweetalert2";
 
 const SignUpPage = () => {
   const navigate = useNavigate();
+  // const url = "http://localhost:5000";
+  const url = "https://athletiqo-backend.vercel.app";
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -25,10 +27,7 @@ const SignUpPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(
-        "http://localhost:5000/user/userRegister",
-        formData
-      );
+      const response = await axios.post(`${url}/user/userRegister`, formData);
 
       Swal.fire({
         title: "Registration Successful!",

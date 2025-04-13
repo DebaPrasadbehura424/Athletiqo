@@ -8,6 +8,8 @@ import { userContextData } from "../context/UserContext";
 
 function Progress(props) {
   const goalId = sessionStorage.getItem("goalId");
+  // const url = "http://localhost:5000";
+  const url = "https://athletiqo-backend.vercel.app";
 
   const { userData, setUserData } = useContext(userContextData);
 
@@ -15,7 +17,7 @@ function Progress(props) {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/goals/getUserdetails/${goalId}`)
+      .get(`${url}/goals/getUserdetails/${goalId}`)
       .then((response) => {
         if (response.status === 200) {
           setUserData(response.data);

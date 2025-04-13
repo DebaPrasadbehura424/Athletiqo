@@ -14,7 +14,16 @@ dotenv.config();
 connectDB();
 
 // Middleware
-app.use(cors());
+// app.use(cors());
+app.use(
+  cors({
+    origin: "https://athletiqo-frontend.vercel.app",
+    credentials: true,
+    methods: ["POST", "GET", "PATCH", "DELETE", "PUT"],
+    allowedHeaders: "*",
+  })
+);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
