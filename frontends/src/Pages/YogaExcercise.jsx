@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
-import andoutjacks from "../workoutwomen/andoutjacks.gif";
+import andoutjacks from "../workoutwomen/baambozzle.gif";
 import baamboozle from "../workoutwomen/baambozzle.gif";
 import bicepsstrech from "../workoutwomen/bicpesstrech.gif";
 import hourGlass from "../images/hourglass.gif";
@@ -28,10 +28,10 @@ function Workout() {
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [timer, setTimer] = useState(30); 
+  const [timer, setTimer] = useState(30);
   const [isWorkoutActive, setIsWorkoutActive] = useState(false);
-  const [resting, setResting] = useState(false); 
-  const [isTimerStopped, setIsTimerStopped] = useState(false); 
+  const [resting, setResting] = useState(false);
+  const [isTimerStopped, setIsTimerStopped] = useState(false);
 
   useEffect(() => {
     let interval;
@@ -40,17 +40,18 @@ function Workout() {
       interval = setInterval(() => {
         setTimer((prev) => prev - 1);
       }, 1000);
-    }
-    else if (timer === 0 && currentIndex < workoutItems.length - 1) {
-      setResting(true); 
-      setTimer(10); 
-    }
-    else if (timer === 0 && resting && currentIndex < workoutItems.length - 1) {
-      setResting(false); 
+    } else if (timer === 0 && currentIndex < workoutItems.length - 1) {
+      setResting(true);
+      setTimer(10);
+    } else if (
+      timer === 0 &&
+      resting &&
+      currentIndex < workoutItems.length - 1
+    ) {
+      setResting(false);
       setCurrentIndex((prevIndex) => prevIndex + 1);
       setTimer(30);
-    }
-    else if (timer === 0 && currentIndex === workoutItems.length - 1) {
+    } else if (timer === 0 && currentIndex === workoutItems.length - 1) {
       Swal.fire({
         title: "Workout Complete!",
         text: "Congratulations, you've completed today's workout!",
@@ -74,7 +75,7 @@ function Workout() {
 
   const startWorkout = () => {
     setIsWorkoutActive(true);
-    setTimer(30); 
+    setTimer(30);
   };
 
   const stopTimer = () => {
@@ -82,7 +83,7 @@ function Workout() {
   };
 
   const resumeTimer = () => {
-    setIsTimerStopped(false); 
+    setIsTimerStopped(false);
   };
 
   const restartWorkout = () => {
@@ -103,7 +104,7 @@ function Workout() {
   const goToPrev = () => {
     if (currentIndex > 0) {
       setCurrentIndex((prevIndex) => prevIndex - 1);
-      setTimer(30); 
+      setTimer(30);
       setResting(false);
     }
   };
