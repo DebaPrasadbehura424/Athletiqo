@@ -27,7 +27,10 @@ const SignUpPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${url}/user/userRegister`, formData);
+      const response = await axios.post(
+        `https://athletiqo-backend.vercel.app/user/userRegister`,
+        formData
+      );
 
       Swal.fire({
         title: "Registration Successful!",
