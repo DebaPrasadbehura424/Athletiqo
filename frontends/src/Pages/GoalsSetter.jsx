@@ -20,6 +20,8 @@ function GoalsSetter() {
   const [age, setAge] = useState(userData?.age || 0);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  // const url = "http://localhost:5000";
+  const url = "https://athletiqo-backend.vercel.app";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,7 +38,7 @@ function GoalsSetter() {
 
     try {
       const response = await axios.put(
-        `http://localhost:5000/goals/updateUserdetails/${goalId}`,
+        `${url}/goals/updateUserdetails/${goalId}`,
         goalData
       );
 
