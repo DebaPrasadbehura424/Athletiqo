@@ -63,11 +63,11 @@ const SignUpPage = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2">
         <div className="relative hidden  md:flex items-end px-4 min-h-screen pb-10 pt-60 sm:pb-16 md:justify-center lg:pb-24 bg-gradient-to-t from-green-500 to-blue-500 sm:px-6 lg:px-8">
           <div className="absolute inset-0">
-            <img
+            {/* <img
               className="object-cover w-full h-full"
               src={registerhere}
               alt="Background"
-            />
+            /> */}
           </div>
           <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
           <div className="relative text-white text-center">

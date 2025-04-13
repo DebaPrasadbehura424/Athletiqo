@@ -76,11 +76,11 @@ const Login = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2">
         <div className="relative hidden md:flex items-end px-4 min-h-screen pb-10 pt-60 sm:pb-16 md:justify-center lg:pb-24 bg-gray-50 sm:px-6 lg:px-8">
           <div className="absolute inset-0">
-            <img
+            {/* <img
               className="object-cover  w-full h-full"
               src={loginImages}
               alt="Fitness"
-            />
+            /> */}
           </div>
           <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
 

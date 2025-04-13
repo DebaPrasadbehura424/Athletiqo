@@ -17,10 +17,15 @@ connectDB();
 // app.use(cors());
 app.use(
   cors({
-    origin: "https://athletiqo-frontend.vercel.app",
+    origin: "https://online-exam-forntendnode.vercel.app",
     credentials: true,
-    methods: ["POST", "GET", "PATCH", "DELETE", "PUT"],
-    allowedHeaders: "*",
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "Accept",
+      "X-Requested-With",
+    ],
   })
 );
 

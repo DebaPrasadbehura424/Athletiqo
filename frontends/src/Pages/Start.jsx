@@ -47,14 +47,14 @@ const Start = () => {
 
   return (
     <div className="relative min-h-screen overflow-hidden overflow-x">
-      <video
+      {/* <video
         autoPlay
         muted
         loop
         className="absolute inset-0 object-cover w-full h-full"
       >
         <source src={bgHere} type="video/mp4" />
-      </video>
+      </video> */}
 
       <header className=" relative z-10 w-full">
         <div className="container mx-auto flex justify-between items-center py-4 px-6">
