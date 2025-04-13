@@ -17,7 +17,7 @@ connectDB();
 // app.use(cors());
 app.use(
   cors({
-    origin: "https://athletiqo-backend.vercel.app",
+    origin: "https://athletiqo-frontend.vercel.app",
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: [
